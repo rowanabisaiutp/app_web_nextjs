@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  ADMIN
+}
+
+enum OrderStatus {
+  CONFIRMADO
+  EN_PREPARACION
+  LISTO
+  ENTREGADO
+  CANCELADO
+}
+
+enum DeliveryType {
+  LOCAL
+  DOMICILIO
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  TARJETA
+}
+
+enum PaymentStatus {
+  PAGADO
+  PENDIENTE
+}
+
+enum PromotionType {
+  COUPON
+  TIME
+}
+
+enum DiscountType {
+  PERCENT
+  AMOUNT
+}
+
+enum AuditLogType {
+  ACTION
+  STATE_CHANGE
+  ERROR
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  auditLogs    AuditLog[]
+}
+
+model Client {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  phone        String?
+  address      String?  @db.Text
+  blocked      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  orders       Order[]
+}
+
+model Category {
+  id       Int      @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  price      Decimal  @db.Decimal(10, 2)
+  available  Boolean  @default(true)
+  imageUrl   String?  @db.VarChar(500)
+  createdAt  DateTime @default(now())
+  orderItems OrderItem[]
+}
+
+model Order {
+  id               Int          @id @default(autoincrement())
+  clientId         Int
+  client           Client       @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  status           OrderStatus  @default(CONFIRMADO)
+  total            Decimal      @db.Decimal(10, 2)
+  deliveryType     DeliveryType @default(LOCAL)
+  deliveryAddress  String?      @db.Text
+  notes            String?      @db.Text
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  items            OrderItem[]
+  payments         Payment[]
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   Int?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(10, 2)
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  orderId   Int
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  amount    Decimal       @db.Decimal(10, 2)
+  method    PaymentMethod
+  status    PaymentStatus @default(PAGADO)
+  createdAt DateTime      @default(now())
+}
+
+model Promotion {
+  id            Int           @id @default(autoincrement())
+  type          PromotionType
+  code          String?       @db.VarChar(50)
+  discountType  DiscountType?
+  value         Decimal?      @db.Decimal(10, 2)
+  validUntil    DateTime?
+  maxUses       Int?
+  usedCount     Int           @default(0)
+  name          String?       @db.VarChar(200)
+  description   String?      @db.Text
+  timeStart     String?      @db.VarChar(10)
+  timeEnd       String?      @db.VarChar(10)
+  active        Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+}
+
+model Combo {
+  id     Int     @id @default(autoincrement())
+  name   String
+  price  Decimal @db.Decimal(10, 2)
+  active Boolean @default(true)
+  items  Json?
+}
+
+model Settings {
+  id                Int      @id @default(autoincrement())
+  businessName      String
+  ruc               String?  @db.VarChar(20)
+  address           String?  @db.Text
+  phone             String?  @db.VarChar(50)
+  email             String?  @db.VarChar(255)
+  logoUrl           String?  @db.VarChar(500)
+  hoursJson         String?  @db.Text
+  shippingCost       Decimal? @db.Decimal(10, 2)
+  freeShippingFrom   Decimal? @db.Decimal(10, 2)
+  igvPercent         Decimal? @db.Decimal(5, 2)
+  pricesIncludeIgv   Boolean  @default(true)
+}
+
+model AuditLog {
+  id           Int          @id @default(autoincrement())
+  userId       Int?
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action       String       @db.VarChar(100)
+  resourceType String       @db.VarChar(50)
+  resourceId   Int?
+  detail       String?      @db.Text
+  oldValue     String?      @db.Text
+  newValue     String?      @db.Text
+  logType      AuditLogType?
+  createdAt    DateTime     @default(now())
+}

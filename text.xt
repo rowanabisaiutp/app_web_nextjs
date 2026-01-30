@@ -1,0 +1,4 @@
+npm run db:generate → npx prisma generate
+npm run db:push → npx prisma db push
+npm run db:migrate → npx prisma migrate deploy
+npm run db:studio → npx prisma studio

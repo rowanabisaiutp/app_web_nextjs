@@ -6,14 +6,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "pnpm prisma generate",
+    "db:push": "pnpm prisma db push",
+    "db:migrate": "pnpm prisma migrate deploy",
+    "db:studio": "pnpm prisma studio",
+    "db:seed": "pnpm prisma db seed"
   },
   "dependencies": {
+    "@prisma/adapter-mariadb": "^7",
+    "@prisma/client": "^7",
+    "bcryptjs": "^2",
+    "jose": "^5",
+    "lucide-react": "^0.460.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2",
+    "dotenv": "^16",
+    "prisma": "^7",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -21,6 +34,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4",
     "typescript": "^5"
   }
 }
