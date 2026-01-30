@@ -4,23 +4,7 @@ import {
   Package,
   Clock,
   Plus,
-  Pencil,
-  ToggleLeft,
-  Percent,
-  Calendar,
 } from "lucide-react";
-
-const COMBOS_MOCK = [
-  { id: "1", nombre: "Combo familiar", productos: "Pollo + papas + gaseosa 1.5L", precio: "35.00", activo: true },
-  { id: "2", nombre: "Almuerzo ejecutivo", productos: "Menú del día + postre", precio: "18.00", activo: true },
-  { id: "3", nombre: "Happy hour", productos: "2 pizzas medianas + 2 bebidas", precio: "42.00", activo: false },
-];
-
-const PROMOS_TIEMPO_MOCK = [
-  { id: "1", nombre: "Almuerzo 2x1", descripcion: "Compra 2 almuerzos y paga 1", horario: "12:00 - 15:00", activa: true },
-  { id: "2", nombre: "Happy hour", descripcion: "20% en bebidas", horario: "18:00 - 20:00", activa: true },
-  { id: "3", nombre: "Desayuno rápido", descripcion: "Café + sandwich a precio especial", horario: "07:00 - 10:00", activa: false },
-];
 
 export default function PromocionesPage() {
   return (
@@ -182,37 +166,9 @@ export default function PromocionesPage() {
             </button>
           </div>
           <div className="p-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {COMBOS_MOCK.map((c) => (
-                <div
-                  key={c.id}
-                  className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4 flex flex-wrap items-start justify-between gap-3"
-                >
-                  <div>
-                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">{c.nombre}</h3>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{c.productos}</p>
-                    <p className="text-sm font-medium text-neutral-900 dark:text-white mt-2">S/ {c.precio}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        c.activo
-                          ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                          : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-                      }`}
-                    >
-                      {c.activo ? "Activo" : "Inactivo"}
-                    </span>
-                    <button
-                      type="button"
-                      className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                    >
-                      <Pencil className="h-4 w-4" aria-hidden />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+              No hay combos. Los datos se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
 
@@ -236,48 +192,9 @@ export default function PromocionesPage() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
               Promociones que aplican en horarios específicos (ej. almuerzo 2x1, happy hour).
             </p>
-            <div className="space-y-3">
-              {PROMOS_TIEMPO_MOCK.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-200 dark:border-neutral-600 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
-                      <Calendar className="h-5 w-5" aria-hidden />
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-white">{p.nombre}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{p.descripcion}</p>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-300 mt-0.5">Horario: {p.horario}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        p.activa
-                          ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                          : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-                      }`}
-                    >
-                      {p.activa ? "Activa" : "Inactiva"}
-                    </span>
-                    <button
-                      type="button"
-                      className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                    >
-                      <Pencil className="h-4 w-4" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                    >
-                      {p.activa ? "Desactivar" : "Activar"}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+              No hay promociones por tiempo. Los datos se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
       </div>

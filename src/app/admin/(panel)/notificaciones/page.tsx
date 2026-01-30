@@ -110,36 +110,9 @@ export default function NotificacionesPage() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Activa o desactiva las notificaciones push que se envían automáticamente según el evento.
             </p>
-            {[
-              { label: "Pedido confirmado", desc: "Cuando el pedido es confirmado", icon: CheckCircle },
-              { label: "Pedido en preparación", desc: "Cuando el pedido pasa a cocina", icon: Package },
-              { label: "Pedido listo para recoger", desc: "Cuando el pedido está listo (recoger en local)", icon: Package },
-              { label: "Pedido en camino", desc: "Cuando el repartidor sale con el pedido", icon: Package },
-            ].map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-200 dark:border-neutral-600 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
-                      <Icon className="h-4 w-4" aria-hidden />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">{item.label}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{item.desc}</p>
-                    </div>
-                  </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Activo</span>
-                    <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
-                      <ToggleLeft className="h-4 w-4 inline" aria-hidden /> Sí
-                    </span>
-                  </label>
-                </div>
-              );
-            })}
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-6 text-center">
+              No hay eventos configurados. Los datos se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
 
@@ -155,10 +128,9 @@ export default function NotificacionesPage() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
               El cliente recibe una notificación push cada vez que cambia el estado de su pedido (confirmado, en preparación, listo, en camino, entregado).
             </p>
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4 bg-neutral-50 dark:bg-neutral-700/30">
-              <p className="text-sm font-medium text-neutral-900 dark:text-white">Notificaciones de estado activadas</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Los avisos se envían según la plantilla configurada para cada estado (solo diseño).</p>
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-6 text-center">
+              Los datos de avisos por estado se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
 

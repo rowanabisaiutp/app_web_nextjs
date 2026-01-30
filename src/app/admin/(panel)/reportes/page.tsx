@@ -51,18 +51,18 @@ export default function ReportesPage() {
                 <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide flex items-center gap-1">
                   <DollarSign className="h-3.5 w-3.5" aria-hidden /> Total ventas
                 </p>
-                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 3,342.00</p>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+12% vs mes anterior</p>
+                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 0.00</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Los datos se cargarán cuando conectes la API.</p>
               </div>
               <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4">
                 <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Pedidos</p>
-                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">499</p>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+8% vs mes anterior</p>
+                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">0</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Los datos se cargarán cuando conectes la API.</p>
               </div>
               <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4">
                 <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Ticket promedio</p>
-                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 6.70</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">vs S/ 6.20 anterior</p>
+                <p className="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 0.00</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Los datos se cargarán cuando conectes la API.</p>
               </div>
             </div>
             {/* Placeholder gráfico */}

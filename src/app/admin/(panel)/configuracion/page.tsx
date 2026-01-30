@@ -11,16 +11,6 @@ import {
   Mail,
 } from "lucide-react";
 
-const DIAS_SEMANA = [
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-  "Domingo",
-];
-
 export default function ConfiguracionPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -146,35 +136,9 @@ export default function ConfiguracionPage() {
             </h2>
           </div>
           <div className="p-5">
-            <div className="space-y-3">
-              {DIAS_SEMANA.map((dia) => (
-                <div
-                  key={dia}
-                  className="flex flex-wrap items-center gap-4 rounded-lg border border-neutral-200 dark:border-neutral-600 p-3"
-                >
-                  <span className="w-24 text-sm font-medium text-neutral-900 dark:text-white">{dia}</span>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-neutral-300 dark:border-neutral-600" defaultChecked={dia !== "Domingo"} readOnly aria-label={`${dia} abierto`} />
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">Abierto</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="09:00"
-                    className="w-20 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400"
-                    readOnly
-                    aria-label={`Apertura ${dia}`}
-                  />
-                  <span className="text-sm text-neutral-500 dark:text-neutral-400">a</span>
-                  <input
-                    type="text"
-                    placeholder="22:00"
-                    className="w-20 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400"
-                    readOnly
-                    aria-label={`Cierre ${dia}`}
-                  />
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+              No hay horarios configurados. Los datos se cargarán cuando conectes la API.
+            </p>
             <div className="mt-5">
               <button
                 type="button"
@@ -284,18 +248,9 @@ export default function ConfiguracionPage() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
               Métodos aceptados: efectivo y tarjeta (solo diseño).
             </p>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-3 rounded-lg border border-neutral-200 dark:border-neutral-600 px-4 py-3 bg-neutral-50 dark:bg-neutral-700/30">
-                <Banknote className="h-5 w-5 text-neutral-500 dark:text-neutral-400" aria-hidden />
-                <span className="text-sm font-medium text-neutral-900 dark:text-white">Efectivo</span>
-                <span className="rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">Activo</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border border-neutral-200 dark:border-neutral-600 px-4 py-3 bg-neutral-50 dark:bg-neutral-700/30">
-                <CreditCard className="h-5 w-5 text-neutral-500 dark:text-neutral-400" aria-hidden />
-                <span className="text-sm font-medium text-neutral-900 dark:text-white">Tarjeta</span>
-                <span className="rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">Activo</span>
-              </div>
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-6 text-center">
+              No hay métodos de pago configurados. Los datos se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
       </div>

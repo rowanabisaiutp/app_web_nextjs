@@ -61,3 +61,41 @@ export async function createAdminUser(data: {
 
   return user;
 }
+
+export type UserWithCreatedAt = UserSafe & { createdAt: Date };
+
+/**
+ * Lista todos los usuarios del panel (para la sección Autenticación y roles).
+ */
+export async function listUsers(): Promise<UserWithCreatedAt[]> {
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: { id: true, email: true, name: true, role: true, createdAt: true },
+  });
+  return users;
+}
+
+/**
+ * Actualiza nombre y/o rol de un usuario.
+ */
+export async function updateUser(
+  id: number,
+  data: { name?: string | null; role?: "ADMIN" }
+): Promise<UserSafe | null> {
+  const user = await prisma.user.update({
+    where: { id },
+    data: {
+      ...(data.name !== undefined && { name: data.name?.trim() || null }),
+      ...(data.role !== undefined && { role: data.role }),
+    },
+    select: { id: true, email: true, name: true, role: true },
+  });
+  return user;
+}
+
+/**
+ * Elimina un usuario del panel.
+ */
+export async function deleteUser(id: number): Promise<void> {
+  await prisma.user.delete({ where: { id } });
+}
