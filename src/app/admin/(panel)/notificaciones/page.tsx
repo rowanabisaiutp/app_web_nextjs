@@ -11,20 +11,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-const PLANTILLAS_MOCK = [
-  { id: 1, nombre: "Pedido confirmado", contenido: "Tu pedido #{{numero}} ha sido confirmado.", activa: true },
-  { id: 2, nombre: "Pedido en preparación", contenido: "Tu pedido está en cocina. Te avisamos cuando esté listo.", activa: true },
-  { id: 3, nombre: "Pedido listo", contenido: "Tu pedido #{{numero}} está listo para recoger.", activa: true },
-  { id: 4, nombre: "Pedido en camino", contenido: "Tu pedido está en camino. Llegará en unos minutos.", activa: true },
-  { id: 5, nombre: "Promoción", contenido: "¡{{titulo}}! Válido hasta {{fecha}}. No te lo pierdas.", activa: false },
-];
-
-const NOTIFICACIONES_ENVIADAS_MOCK = [
-  { id: 1, titulo: "Almuerzo 2x1 hoy", fecha: "29/01/2025 10:00", destinatarios: "Todos", estado: "enviado" },
-  { id: 2, titulo: "Pedido #45 listo", fecha: "29/01/2025 14:35", destinatarios: "1 cliente", estado: "enviado" },
-  { id: 3, titulo: "Cupón VERANO20", fecha: "28/01/2025 18:00", destinatarios: "Segmento: activos", estado: "enviado" },
-];
-
 export default function NotificacionesPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -214,31 +200,11 @@ export default function NotificacionesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {PLANTILLAS_MOCK.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{p.nombre}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 max-w-xs truncate">{p.contenido}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          p.activa
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                            : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-                        }`}
-                      >
-                        {p.activa ? "Activa" : "Inactiva"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        className="rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                      >
-                        Editar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={4} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay plantillas. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -263,18 +229,11 @@ export default function NotificacionesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {NOTIFICACIONES_ENVIADAS_MOCK.map((n) => (
-                  <tr key={n.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{n.titulo}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{n.fecha}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{n.destinatarios}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
-                        <CheckCircle className="h-3.5 w-3.5" aria-hidden /> Enviado
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={4} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay notificaciones enviadas. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

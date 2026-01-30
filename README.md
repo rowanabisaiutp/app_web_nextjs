@@ -35,6 +35,11 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Estructura del proyecto (back / front)
+
+- **Front:** `src/app/` (páginas), `src/components/`, `src/hooks/`, `src/types/` — UI y estado en cliente.
+- **Back:** Rutas API en `src/app/api/` (validan y llaman a servicios); lógica de DB en `src/lib/services/` (Prisma); JWT/cookies en `src/lib/auth.ts`. La lógica va por capas: API → servicio → Prisma. Empezamos por Auth y roles; el resto de módulos se irán uno a uno.
+
 🖥️ Módulos del sistema administrador (Web)
 1️⃣ Autenticación y roles
 

@@ -9,25 +9,6 @@ import {
   Calendar,
 } from "lucide-react";
 
-const ACCIONES_MOCK = [
-  { id: 1, fecha: "29/01/2025 14:35", usuario: "admin@negocio.com", accion: "Cambio de estado", recurso: "Pedido #45", detalle: "En preparación → Listo" },
-  { id: 2, fecha: "29/01/2025 14:32", usuario: "admin@negocio.com", accion: "Login", recurso: "—", detalle: "Sesión iniciada" },
-  { id: 3, fecha: "29/01/2025 14:12", usuario: "admin@negocio.com", accion: "Registro de pago", recurso: "Pedido #44", detalle: "S/ 18.00 — Tarjeta" },
-  { id: 4, fecha: "29/01/2025 13:58", usuario: "admin@negocio.com", accion: "Confirmación de entrega", recurso: "Pedido #43", detalle: "Marcado como entregado" },
-  { id: 5, fecha: "28/01/2025 20:15", usuario: "admin@negocio.com", accion: "Cancelación de pedido", recurso: "Pedido #38", detalle: "Pedido cancelado" },
-];
-
-const CAMBIOS_ESTADO_MOCK = [
-  { id: 1, fecha: "29/01/2025 14:35", recurso: "Pedido #45", anterior: "En preparación", nuevo: "Listo", usuario: "admin@negocio.com" },
-  { id: 2, fecha: "29/01/2025 14:15", recurso: "Pedido #44", anterior: "Confirmado", nuevo: "En preparación", usuario: "admin@negocio.com" },
-  { id: 3, fecha: "29/01/2025 13:58", recurso: "Pedido #43", anterior: "En camino", nuevo: "Entregado", usuario: "admin@negocio.com" },
-];
-
-const ERRORES_MOCK = [
-  { id: 1, fecha: "28/01/2025 22:10", tipo: "API", mensaje: "Timeout al conectar con servicio de pagos", recurso: "Pedido #40" },
-  { id: 2, fecha: "27/01/2025 09:05", tipo: "Validación", mensaje: "Datos de cliente incompletos", recurso: "Registro" },
-];
-
 export default function LogsPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -116,22 +97,11 @@ export default function LogsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {ACCIONES_MOCK.map((a) => (
-                  <tr key={a.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 whitespace-nowrap">{a.fecha}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white">
-                      <span className="inline-flex items-center gap-1">
-                        <User className="h-3.5 w-3.5 text-neutral-400" aria-hidden />
-                        {a.usuario}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{a.accion}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{a.recurso}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 max-w-[240px] truncate" title={a.detalle}>
-                      {a.detalle}
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay acciones registradas. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -157,19 +127,11 @@ export default function LogsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {CAMBIOS_ESTADO_MOCK.map((c) => (
-                  <tr key={c.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 whitespace-nowrap">{c.fecha}</td>
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{c.recurso}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{c.anterior}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
-                        {c.nuevo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{c.usuario}</td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay cambios de estado. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -194,20 +156,11 @@ export default function LogsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {ERRORES_MOCK.map((e) => (
-                  <tr key={e.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 whitespace-nowrap">{e.fecha}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
-                        {e.tipo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white max-w-[320px] truncate" title={e.mensaje}>
-                      {e.mensaje}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{e.recurso}</td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={4} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay errores registrados. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

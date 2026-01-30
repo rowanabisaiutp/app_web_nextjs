@@ -10,27 +10,6 @@ import {
   DollarSign,
 } from "lucide-react";
 
-const PRODUCTOS_VENDIDOS_MOCK = [
-  { producto: "Hamburguesa clásica", cantidad: 128, ingresos: "1,088.00" },
-  { producto: "Pollo a la brasa", cantidad: 95, ingresos: "1,140.00" },
-  { producto: "Ensalada César", cantidad: 72, ingresos: "432.00" },
-  { producto: "Limonada", cantidad: 156, ingresos: "390.00" },
-  { producto: "Brownie", cantidad: 48, ingresos: "192.00" },
-];
-
-const CLIENTES_RECURRENTES_MOCK = [
-  { cliente: "María García", pedidos: 28, ultimoPedido: "29/01/2025" },
-  { cliente: "Ana López", pedidos: 22, ultimoPedido: "28/01/2025" },
-  { cliente: "Juan Pérez", pedidos: 18, ultimoPedido: "29/01/2025" },
-  { cliente: "Carlos Ruiz", pedidos: 15, ultimoPedido: "27/01/2025" },
-];
-
-const HORARIOS_PICO_MOCK = [
-  { horario: "12:00 - 14:00", pedidos: 45, ingresos: "520.00", label: "Almuerzo" },
-  { horario: "19:00 - 21:00", pedidos: 38, ingresos: "445.00", label: "Cena" },
-  { horario: "08:00 - 10:00", pedidos: 12, ingresos: "98.00", label: "Desayuno" },
-];
-
 export default function ReportesPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -111,13 +90,11 @@ export default function ReportesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {PRODUCTOS_VENDIDOS_MOCK.map((p, i) => (
-                  <tr key={i} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{p.producto}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white text-right">{p.cantidad}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white text-right font-medium">{p.ingresos}</td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={3} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay datos. Los reportes se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -141,13 +118,11 @@ export default function ReportesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {CLIENTES_RECURRENTES_MOCK.map((c, i) => (
-                  <tr key={i} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{c.cliente}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white text-right">{c.pedidos}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{c.ultimoPedido}</td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={3} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay datos. Los reportes se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -162,22 +137,9 @@ export default function ReportesPage() {
             </h2>
           </div>
           <div className="p-5">
-            <div className="grid gap-4 sm:grid-cols-3">
-              {HORARIOS_PICO_MOCK.map((h, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4"
-                >
-                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
-                    {h.label}
-                  </p>
-                  <p className="text-sm font-semibold text-neutral-900 dark:text-white mt-1">{h.horario}</p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2">
-                    {h.pedidos} pedidos · S/ {h.ingresos}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+              No hay datos. Los reportes se cargarán cuando conectes la API.
+            </p>
           </div>
         </section>
 

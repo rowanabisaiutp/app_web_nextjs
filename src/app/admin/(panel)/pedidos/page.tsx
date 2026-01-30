@@ -2,7 +2,6 @@ import {
   ClipboardList,
   Search,
   Filter,
-  Eye,
   XCircle,
   ChevronDown,
   Clock,
@@ -25,20 +24,6 @@ const badgeClass: Record<string, string> = {
   entregado: "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
   cancelado: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
 };
-
-const PEDIDOS_MOCK = [
-  { id: 1, cliente: "María García", fecha: "29/01/2025 14:32", estado: "en_preparacion", total: "24.50" },
-  { id: 2, cliente: "Juan Pérez", fecha: "29/01/2025 14:15", estado: "confirmado", total: "18.00" },
-  { id: 3, cliente: "Ana López", fecha: "29/01/2025 13:58", estado: "listo", total: "31.20" },
-  { id: 4, cliente: "Carlos Ruiz", fecha: "29/01/2025 12:40", estado: "entregado", total: "15.80" },
-  { id: 5, cliente: "Laura Martínez", fecha: "28/01/2025 20:10", estado: "cancelado", total: "22.00" },
-];
-
-const ITEMS_MOCK = [
-  { producto: "Hamburguesa clásica", cantidad: 2, precio: "8.50" },
-  { producto: "Papas fritas", cantidad: 1, precio: "3.50" },
-  { producto: "Refresco", cantidad: 2, precio: "2.00" },
-];
 
 export default function PedidosPage() {
   return (
@@ -112,27 +97,11 @@ export default function PedidosPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {PEDIDOS_MOCK.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white font-medium">{p.id}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white">{p.cliente}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{p.fecha}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${badgeClass[p.estado] ?? ""}`}>
-                        {p.estado.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white text-right font-medium">S/ {p.total}</td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                      >
-                        <Eye className="h-4 w-4" aria-hidden /> Ver
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay pedidos. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -147,15 +116,9 @@ export default function PedidosPage() {
             </h2>
           </div>
           <div className="p-5 space-y-5">
-            <div className="flex flex-wrap gap-4 items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-900 dark:text-white">Pedido #1 — María García</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">29/01/2025 14:32</p>
-              </div>
-              <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeClass.en_preparacion}`}>
-                En preparación
-              </span>
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              Selecciona un pedido de la lista para ver el detalle.
+            </p>
             <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
@@ -167,22 +130,17 @@ export default function PedidosPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                  {ITEMS_MOCK.map((item, i) => (
-                    <tr key={i}>
-                      <td className="px-4 py-2 text-neutral-900 dark:text-white">{item.producto}</td>
-                      <td className="px-4 py-2 text-neutral-600 dark:text-neutral-400 text-center">{item.cantidad}</td>
-                      <td className="px-4 py-2 text-neutral-600 dark:text-neutral-400 text-right">S/ {item.precio}</td>
-                      <td className="px-4 py-2 text-neutral-900 dark:text-white text-right font-medium">
-                        S/ {(Number(item.precio) * item.cantidad).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                      Sin ítems
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-neutral-200 dark:border-neutral-600">
               <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                Total: <span className="text-lg">S/ 24.50</span>
+                Total: <span className="text-lg">S/ 0.00</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 <select
@@ -229,19 +187,11 @@ export default function PedidosPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                  {PEDIDOS_MOCK.filter((p) => p.estado === "entregado" || p.estado === "cancelado").map((p) => (
-                    <tr key={p.id}>
-                      <td className="px-4 py-3 text-neutral-900 dark:text-white font-medium">{p.id}</td>
-                      <td className="px-4 py-3 text-neutral-900 dark:text-white">{p.cliente}</td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{p.fecha}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeClass[p.estado] ?? ""}`}>
-                          {p.estado.replace("_", " ")}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-neutral-900 dark:text-white text-right font-medium">S/ {p.total}</td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={5} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                      No hay historial. Los pedidos finalizados aparecerán aquí.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>

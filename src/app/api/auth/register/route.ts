@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import {
+  findUserByEmail,
+  createAdminUser,
+} from "@/lib/services/auth.service";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -31,10 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const existing = await prisma.user.findUnique({
-      where: { email: trimmedEmail },
-    });
-
+    const existing = await findUserByEmail(trimmedEmail);
     if (existing) {
       return NextResponse.json(
         { error: "Ya existe una cuenta con este email" },
@@ -42,16 +41,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    const user = await prisma.user.create({
-      data: {
-        email: trimmedEmail,
-        passwordHash,
-        name: typeof name === "string" && name.trim() ? name.trim() : null,
-        role: "ADMIN",
-      },
-      select: { id: true, email: true, name: true },
+    const user = await createAdminUser({
+      email: trimmedEmail,
+      password,
+      name: typeof name === "string" ? name : undefined,
     });
 
     return NextResponse.json({

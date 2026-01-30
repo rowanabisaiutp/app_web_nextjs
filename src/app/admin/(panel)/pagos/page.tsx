@@ -9,14 +9,6 @@ import {
   Clock,
 } from "lucide-react";
 
-const PAGOS_MOCK = [
-  { id: 1, pedidoId: 42, monto: "24.50", metodo: "efectivo", fecha: "29/01/2025 14:35", estado: "pagado" },
-  { id: 2, pedidoId: 41, monto: "18.00", metodo: "tarjeta", fecha: "29/01/2025 14:12", estado: "pagado" },
-  { id: 3, pedidoId: 40, monto: "31.20", metodo: "efectivo", fecha: "29/01/2025 13:58", estado: "pagado" },
-  { id: 4, pedidoId: 39, monto: "15.80", metodo: "tarjeta", fecha: "29/01/2025 12:45", estado: "pagado" },
-  { id: 5, pedidoId: 38, monto: "22.00", metodo: "efectivo", fecha: "28/01/2025 20:15", estado: "pendiente" },
-];
-
 export default function PagosPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -153,46 +145,11 @@ export default function PagosPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {PAGOS_MOCK.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{p.id}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white">#{p.pedidoId}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white text-right font-medium">S/ {p.monto}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          p.metodo === "efectivo"
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                            : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
-                        }`}
-                      >
-                        {p.metodo === "efectivo" ? (
-                          <Banknote className="h-3.5 w-3.5" aria-hidden />
-                        ) : (
-                          <CreditCard className="h-3.5 w-3.5" aria-hidden />
-                        )}
-                        {p.metodo === "efectivo" ? "Efectivo" : "Tarjeta"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{p.fecha}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          p.estado === "pagado"
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                            : "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
-                        }`}
-                      >
-                        {p.estado === "pagado" ? (
-                          <CheckCircle className="h-3.5 w-3.5" aria-hidden />
-                        ) : (
-                          <Clock className="h-3.5 w-3.5" aria-hidden />
-                        )}
-                        {p.estado === "pagado" ? "Pagado" : "Pendiente"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay pagos registrados. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -203,21 +160,21 @@ export default function PagosPage() {
           <div className="px-5 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
             <Calendar className="h-5 w-5 text-neutral-500 dark:text-neutral-400 shrink-0" aria-hidden />
             <h2 className="text-lg font-medium text-neutral-900 dark:text-white">
-              Resumen del día (solo diseño)
+              Resumen del día
             </h2>
           </div>
           <div className="p-5 grid gap-4 sm:grid-cols-3">
             <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4">
               <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Efectivo</p>
-              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 78.70</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 0.00</p>
             </div>
             <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4">
               <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Tarjeta</p>
-              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 33.80</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 0.00</p>
             </div>
             <div className="rounded-lg border border-neutral-200 dark:border-neutral-600 p-4">
               <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">Total</p>
-              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 112.50</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-white mt-1">S/ 0.00</p>
             </div>
           </div>
         </section>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { findUserById } from "@/lib/services/auth.service";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -16,11 +16,7 @@ export async function GET() {
     return NextResponse.json({ user: null }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
-    select: { id: true, email: true, name: true, role: true },
-  });
-
+  const user = await findUserById(payload.userId);
   if (!user) {
     return NextResponse.json({ user: null }, { status: 401 });
   }

@@ -38,9 +38,11 @@ type Props = {
   user: { email: string };
 };
 
-export function AdminSidebar({ user }: Props) {
+export function AdminSidebar({ user: userProp }: Props) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user: userFromAuth, logout } = useAuth();
+  const displayEmail = userFromAuth?.email ?? userProp.email;
+  const displayName = userFromAuth?.name ?? undefined;
 
   return (
     <aside className="w-64 shrink-0 flex flex-col border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
@@ -82,8 +84,13 @@ export function AdminSidebar({ user }: Props) {
       </nav>
 
       <div className="p-3 border-t border-neutral-200 dark:border-neutral-700">
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate px-2 mb-2" title={user.email}>
-          {user.email}
+        {displayName && (
+          <p className="text-sm font-medium text-neutral-900 dark:text-white truncate px-2 mb-0.5">
+            {displayName}
+          </p>
+        )}
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate px-2 mb-2" title={displayEmail}>
+          {displayEmail}
         </p>
         <button
           type="button"

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { createToken, getCookieName } from "@/lib/auth";
+import {
+  findUserByEmail,
+  validatePassword,
+} from "@/lib/services/auth.service";
 
 export async function POST(request: Request) {
   try {
@@ -16,10 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: email.trim().toLowerCase() },
-    });
-
+    const user = await findUserByEmail(email);
     if (!user) {
       return NextResponse.json(
         { error: "Credenciales incorrectas" },
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    const valid = await validatePassword(password, user.passwordHash);
     if (!valid) {
       return NextResponse.json(
         { error: "Credenciales incorrectas" },

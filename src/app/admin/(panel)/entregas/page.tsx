@@ -10,19 +10,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const ENTREGAS_MOCK = [
-  { id: 1, pedidoId: 45, cliente: "María García", tipo: "domicilio", direccion: "Av. Principal 123, Lima", estado: "en_camino" },
-  { id: 2, pedidoId: 44, cliente: "Juan Pérez", tipo: "local", direccion: "—", estado: "pendiente" },
-  { id: 3, pedidoId: 43, cliente: "Ana López", tipo: "domicilio", direccion: "Jr. Los Olivos 456", estado: "entregado" },
-  { id: 4, pedidoId: 42, cliente: "Carlos Ruiz", tipo: "local", direccion: "—", estado: "entregado" },
-];
-
-const badgeEstado: Record<string, { label: string; class: string; Icon: typeof Clock }> = {
-  pendiente: { label: "Pendiente", class: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300", Icon: Clock },
-  en_camino: { label: "En camino", class: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300", Icon: Truck },
-  entregado: { label: "Entregado", class: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300", Icon: CheckCircle },
-};
-
 export default function EntregasPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -101,52 +88,11 @@ export default function EntregasPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {ENTREGAS_MOCK.map((e) => {
-                  const estado = badgeEstado[e.estado];
-                  const EstadoIcon = estado.Icon;
-                  return (
-                    <tr key={e.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                      <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">#{e.pedidoId}</td>
-                      <td className="px-4 py-3 text-neutral-900 dark:text-white">{e.cliente}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            e.tipo === "local"
-                              ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
-                              : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
-                          }`}
-                        >
-                          {e.tipo === "local" ? (
-                            <Store className="h-3.5 w-3.5" aria-hidden />
-                          ) : (
-                            <Home className="h-3.5 w-3.5" aria-hidden />
-                          )}
-                          {e.tipo === "local" ? "Recoger en local" : "A domicilio"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 max-w-[200px] truncate" title={e.direccion}>
-                        {e.direccion}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${estado.class}`}>
-                          <EstadoIcon className="h-3.5 w-3.5" aria-hidden />
-                          {estado.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        {e.estado !== "entregado" && (
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                          >
-                            Confirmar entrega
-                            <ChevronRight className="h-4 w-4" aria-hidden />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay entregas. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -161,16 +107,9 @@ export default function EntregasPage() {
             </h2>
           </div>
           <div className="p-5">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
-              Pedido #45 — María García (a domicilio)
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              Selecciona un pedido de la lista para ver la dirección de entrega.
             </p>
-            <div className="flex items-start gap-3 rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-700/30 p-4">
-              <MapPin className="h-5 w-5 text-neutral-400 shrink-0 mt-0.5" aria-hidden />
-              <div>
-                <p className="text-sm font-medium text-neutral-900 dark:text-white">Av. Principal 123, Lima</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Referencia: Frente al parque (solo diseño)</p>
-              </div>
-            </div>
           </div>
         </section>
 

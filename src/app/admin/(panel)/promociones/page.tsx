@@ -10,20 +10,16 @@ import {
   Calendar,
 } from "lucide-react";
 
-const CUPONES_MOCK = [
-  { id: 1, codigo: "VERANO20", tipo: "porcentaje", valor: "20%", vigencia: "01/01 - 31/01", usos: "15/50", activo: true },
-  { id: 2, codigo: "S/5OFF", tipo: "monto", valor: "S/ 5", vigencia: "01/01 - 15/02", usos: "8/100", activo: true },
-  { id: 3, codigo: "PRIMERA", tipo: "porcentaje", valor: "15%", vigencia: "Permanente", usos: "23/∞", activo: false },
-];
-
 const COMBOS_MOCK = [
-  { id: 1, nombre: "Combo hamburguesa", productos: "Hamburguesa + Papas + Bebida", precio: "12.00", activo: true },
-  { id: 2, nombre: "Combo familiar", productos: "2 Hamburguesas + 2 Papas + 2 Bebidas", precio: "22.00", activo: false },
+  { id: "1", nombre: "Combo familiar", productos: "Pollo + papas + gaseosa 1.5L", precio: "35.00", activo: true },
+  { id: "2", nombre: "Almuerzo ejecutivo", productos: "Menú del día + postre", precio: "18.00", activo: true },
+  { id: "3", nombre: "Happy hour", productos: "2 pizzas medianas + 2 bebidas", precio: "42.00", activo: false },
 ];
 
 const PROMOS_TIEMPO_MOCK = [
-  { id: 1, nombre: "Almuerzo 2x1", descripcion: "De 12:00 a 15:00", horario: "12:00 - 15:00", activa: true },
-  { id: 2, nombre: "Happy hour bebidas", descripcion: "30% en bebidas", horario: "18:00 - 20:00", activa: false },
+  { id: "1", nombre: "Almuerzo 2x1", descripcion: "Compra 2 almuerzos y paga 1", horario: "12:00 - 15:00", activa: true },
+  { id: "2", nombre: "Happy hour", descripcion: "20% en bebidas", horario: "18:00 - 20:00", activa: true },
+  { id: "3", nombre: "Desayuno rápido", descripcion: "Café + sandwich a precio especial", horario: "07:00 - 10:00", activa: false },
 ];
 
 export default function PromocionesPage() {
@@ -159,49 +155,11 @@ export default function PromocionesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {CUPONES_MOCK.map((c) => (
-                  <tr key={c.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3 font-mono font-medium text-neutral-900 dark:text-white">{c.codigo}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
-                      {c.tipo === "porcentaje" ? (
-                        <span className="inline-flex items-center gap-1"><Percent className="h-3.5 w-3.5" aria-hidden /> %</span>
-                      ) : (
-                        "Monto fijo"
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white font-medium">{c.valor}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{c.vigencia}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{c.usos}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          c.activo
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                            : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-                        }`}
-                      >
-                        <ToggleLeft className="h-3.5 w-3.5" aria-hidden />
-                        {c.activo ? "Activo" : "Inactivo"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                        >
-                          <Pencil className="h-4 w-4" aria-hidden /> Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-                        >
-                          {c.activo ? "Desactivar" : "Activar"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay cupones creados. Los datos se cargarán cuando conectes la API.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

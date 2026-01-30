@@ -9,21 +9,6 @@ import {
   ToggleLeft,
 } from "lucide-react";
 
-const CATEGORIAS_MOCK = [
-  { id: 1, nombre: "Entradas" },
-  { id: 2, nombre: "Platos principales" },
-  { id: 3, nombre: "Bebidas" },
-  { id: 4, nombre: "Postres" },
-];
-
-const PRODUCTOS_MOCK = [
-  { id: 1, nombre: "Hamburguesa clásica", categoria: "Platos principales", precio: "8.50", disponible: true },
-  { id: 2, nombre: "Ensalada César", categoria: "Entradas", precio: "6.00", disponible: true },
-  { id: 3, nombre: "Pollo a la brasa", categoria: "Platos principales", precio: "12.00", disponible: false },
-  { id: 4, nombre: "Limonada", categoria: "Bebidas", precio: "2.50", disponible: true },
-  { id: 5, nombre: "Brownie", categoria: "Postres", precio: "4.00", disponible: true },
-];
-
 export default function MenuPage() {
   return (
     <div className="p-6 lg:p-8">
@@ -57,23 +42,9 @@ export default function MenuPage() {
             </button>
           </div>
           <div className="p-5">
-            <div className="flex flex-wrap gap-3">
-              {CATEGORIAS_MOCK.map((c) => (
-                <div
-                  key={c.id}
-                  className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-600 px-4 py-2 bg-neutral-50 dark:bg-neutral-700/30"
-                >
-                  <span className="text-sm font-medium text-neutral-900 dark:text-white">{c.nombre}</span>
-                  <button
-                    type="button"
-                    className="rounded p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
-                    aria-label="Editar categoría"
-                  >
-                    <Pencil className="h-3.5 w-3.5" aria-hidden />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              No hay categorías. Crea una para organizar los productos.
+            </p>
           </div>
         </section>
 
@@ -103,46 +74,11 @@ export default function MenuPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-600">
-                {PRODUCTOS_MOCK.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                    <td className="px-4 py-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-200 dark:bg-neutral-600 text-neutral-400">
-                        <ImageIcon className="h-5 w-5" aria-hidden />
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{p.nombre}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{p.categoria}</td>
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white font-medium">S/ {p.precio}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          p.disponible
-                            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                            : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-                        }`}
-                      >
-                        <ToggleLeft className="h-3.5 w-3.5" aria-hidden />
-                        {p.disponible ? "Disponible" : "No disponible"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                        >
-                          <Pencil className="h-4 w-4" aria-hidden /> Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" aria-hidden /> Baja
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    No hay productos. Añade categorías y productos desde el formulario.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -180,9 +116,6 @@ export default function MenuPage() {
                   aria-label="Categoría"
                 >
                   <option value="">Seleccionar categoría</option>
-                  {CATEGORIAS_MOCK.map((c) => (
-                    <option key={c.id} value={c.id}>{c.nombre}</option>
-                  ))}
                 </select>
               </div>
               <div>

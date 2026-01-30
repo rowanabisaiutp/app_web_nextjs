@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
 import { AdminSidebar } from "./AdminSidebar";
+import { AuthHydrate } from "./AuthHydrate";
 
 export default async function PanelLayout({
   children,
@@ -22,6 +23,7 @@ export default async function PanelLayout({
 
   return (
     <div className="h-screen flex overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <AuthHydrate />
       <AdminSidebar user={{ email: payload.email }} />
       <main className="flex-1 min-h-0 overflow-auto">
         {children}
