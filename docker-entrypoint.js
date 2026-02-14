@@ -4,13 +4,8 @@ const { spawn } = require('node:child_process')
 
 const env = { ...process.env }
 
-;(async() => {
-  // If running the web server then prerender pages
-  if (process.argv.slice(-3).join(' ') === 'pnpm run start') {
-    await exec('npx next build --experimental-build-mode generate')
-  }
-
-  // launch application
+;(async () => {
+  // Run the CMD directly so the app listens on 8080 ASAP (no runtime generate step)
   await exec(process.argv.slice(2).join(' '))
 })()
 
