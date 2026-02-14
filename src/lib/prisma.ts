@@ -47,20 +47,27 @@ function getDbConfig(): DbConfig {
   );
 }
 
-const config = getDbConfig();
-
-const adapter = new PrismaMariaDb({
-  host: config.host,
-  port: config.port,
-  user: config.user,
-  password: config.password,
-  database: config.database,
-  connectionLimit: 10,
-});
-
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
+function getPrismaClient(): PrismaClient {
+  if (globalForPrisma.prisma) return globalForPrisma.prisma;
+  const config = getDbConfig();
+  const adapter = new PrismaMariaDb({
+    host: config.host,
+    port: config.port,
+    user: config.user,
+    password: config.password,
+    database: config.database,
+    connectionLimit: 10,
+  });
+  const client = new PrismaClient({ adapter });
+  if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = client;
+  return client;
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+/** Cliente Prisma; se inicializa en el primer uso para no exigir DB en build. */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_, prop: string) {
+    return (getPrismaClient() as unknown as Record<string, unknown>)[prop];
+  },
+});

@@ -6,6 +6,10 @@
 app = 'app-web-nextjs'
 primary_region = 'ams'
 
+[env]
+  PORT = "8080"
+  HOSTNAME = "0.0.0.0"
+
 [build]
 
 [http_service]
@@ -15,6 +19,8 @@ primary_region = 'ams'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
+  # Más tiempo para que Next.js + DB respondan tras el deploy
+  grace_period = "60s"
 
 [[vm]]
   memory = '1gb'

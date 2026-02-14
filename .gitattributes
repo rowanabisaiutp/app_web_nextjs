@@ -1,0 +1,5 @@
+# Scripts and entrypoints must use LF so Linux (e.g. Fly.io) can run them
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+docker-entrypoint.js text eol=lf
