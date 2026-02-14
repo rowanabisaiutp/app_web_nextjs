@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { PaymentMethod, PaymentStatus } from "@/generated/prisma/enums";
+import type { PaymentWhereInput } from "@/generated/prisma/models/Payment";
 
 export type PaymentDto = {
   id: number;
@@ -19,7 +20,7 @@ export async function listPayments(filters?: {
   orderId?: number;
   method?: PaymentMethod;
 }): Promise<PaymentDto[]> {
-  const where: Parameters<typeof prisma.payment.findMany>[0]["where"] = {};
+  const where: PaymentWhereInput = {};
   if (filters?.orderId != null) where.orderId = filters.orderId;
   if (filters?.method != null) where.method = filters.method;
 

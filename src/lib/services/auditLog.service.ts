@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { AuditLogType } from "@/generated/prisma/enums";
+import type { AuditLogWhereInput } from "@/generated/prisma/models/AuditLog";
 
 export type AuditLogDto = {
   id: number;
@@ -35,7 +36,7 @@ export async function listAuditLogs(filters: ListAuditLogsFilters = {}): Promise
 }> {
   const { search, from, to, logType, userId, limit = 50, offset = 0 } = filters;
 
-  const where: Parameters<typeof prisma.auditLog.findMany>[0]["where"] = {};
+  const where: AuditLogWhereInput = {};
 
   if (search && search.trim()) {
     const q = `%${search.trim()}%`;

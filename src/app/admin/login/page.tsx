@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks";
@@ -60,7 +60,7 @@ const IconShield = () => (
   </svg>
 );
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/admin";
@@ -210,5 +210,17 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
+        <span className="inline-block w-8 h-8 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin" aria-hidden />
+      </div>
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }

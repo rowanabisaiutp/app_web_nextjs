@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@/generated/prisma/enums";
+import type { OrderWhereInput } from "@/generated/prisma/models/Order";
 
 export type OrderListItem = {
   id: number;
@@ -45,7 +46,7 @@ export async function listOrders(filters?: {
   search?: string;
   clientId?: number;
 }): Promise<OrderListItem[]> {
-  const where: Parameters<typeof prisma.order.findMany>[0]["where"] = {};
+  const where: OrderWhereInput = {};
 
   if (filters?.status && filters.status !== "todos") {
     where.status = filters.status as OrderStatus;

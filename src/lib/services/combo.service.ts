@@ -12,7 +12,6 @@ export type ComboDto = {
   price: string;
   active: boolean;
   items: ComboItemDto[];
-  createdAt: Date;
 };
 
 /** Items en JSON: array de { productId, quantity } */
@@ -53,7 +52,6 @@ export async function listCombos(): Promise<ComboDto[]> {
       price: String(c.price),
       active: c.active,
       items,
-      createdAt: c.createdAt,
     };
   });
 }
@@ -88,7 +86,6 @@ export async function getComboById(id: number): Promise<ComboDto | null> {
     price: String(c.price),
     active: c.active,
     items: itemsDto,
-    createdAt: c.createdAt,
   };
 }
 
@@ -117,13 +114,13 @@ export async function createCombo(data: CreateComboInput): Promise<ComboDto> {
     },
   });
 
-  return getComboById(c.id) ?? {
+  const created = await getComboById(c.id);
+  return created ?? {
     id: c.id,
     name: c.name,
     price: String(c.price),
     active: c.active,
     items: [],
-    createdAt: c.createdAt,
   };
 }
 

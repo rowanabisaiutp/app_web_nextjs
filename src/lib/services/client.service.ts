@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import type { ClientWhereInput } from "@/generated/prisma/models/Client";
 
 const SALT_ROUNDS = 12;
 
@@ -20,7 +21,7 @@ export type ClientDetailDto = ClientDto & {};
  * Lista clientes con búsqueda opcional por nombre o email.
  */
 export async function listClients(search?: string): Promise<ClientDto[]> {
-  const where: Parameters<typeof prisma.client.findMany>[0]["where"] = {};
+  const where: ClientWhereInput = {};
   if (search?.trim()) {
     const q = search.trim();
     where.OR = [

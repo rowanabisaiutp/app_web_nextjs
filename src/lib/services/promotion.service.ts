@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { PromotionType, DiscountType } from "@/generated/prisma/enums";
+import type { PromotionWhereInput } from "@/generated/prisma/models/Promotion";
 
 export type PromotionDto = {
   id: number;
@@ -24,7 +25,7 @@ export type PromotionDto = {
 export async function listPromotions(filters?: {
   type?: PromotionType;
 }): Promise<PromotionDto[]> {
-  const where: Parameters<typeof prisma.promotion.findMany>[0]["where"] = {};
+  const where: PromotionWhereInput = {};
   if (filters?.type) where.type = filters.type;
 
   const list = await prisma.promotion.findMany({

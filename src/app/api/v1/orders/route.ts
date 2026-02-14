@@ -28,14 +28,16 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status") as OrderStatus | "todos" | null;
+  const statusParam = searchParams.get("status");
+  const status: OrderStatus | "todos" =
+    statusParam && statusParam.trim() !== "" ? (statusParam as OrderStatus) : "todos";
   const deliveryType = searchParams.get("deliveryType") as "LOCAL" | "DOMICILIO" | "todos" | null;
   const search = searchParams.get("search") ?? undefined;
   const clientIdParam = searchParams.get("clientId");
   const clientId = clientIdParam ? parseInt(clientIdParam, 10) : undefined;
 
   const orders = await listOrders({
-    status: status && status !== "" ? status : "todos",
+    status,
     deliveryType: deliveryType === "LOCAL" || deliveryType === "DOMICILIO" ? deliveryType : "todos",
     search,
     clientId: clientId != null && !Number.isNaN(clientId) ? clientId : undefined,
