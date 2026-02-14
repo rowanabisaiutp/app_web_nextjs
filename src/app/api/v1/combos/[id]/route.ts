@@ -60,7 +60,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       ? Array.isArray(body.items)
         ? body.items
             .filter((i) => i && typeof i.productId === "number" && typeof i.quantity === "number")
-            .map((i) => ({ productId: i.productId, quantity: Math.max(1, i.quantity) })
+            .map((i) => ({ productId: i.productId, quantity: Math.max(1, i.quantity) }))
         : []
       : undefined;
   const combo = await updateCombo(comboId, {
