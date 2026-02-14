@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentación API — Rutas de endpoints</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2d2d2d;
+      --text: #e5e5e5;
+      --text-muted: #a3a3a3;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --font-sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --font-mono: ui-monospace, "Cascadia Code", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans); line-height: 1.5; font-size: 15px; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { font-size: 1.6rem; font-weight: 700; margin: 0 0 0.5rem; }
+    .subtitle { color: var(--text-muted); margin: 0 0 2rem; font-size: 0.95rem; }
+    h2 { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+    p { margin: 0 0 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.75rem 0; }
+    th, td { padding: 0.5rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+    th { background: var(--surface); font-weight: 600; }
+    td { background: var(--bg); }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    code { font-family: var(--font-mono); font-size: 0.85rem; background: #262626; padding: 0.1em 0.35em; border-radius: 4px; color: #fbbf24; }
+    .method { display: inline-block; padding: 0.15em 0.45em; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .m-get { background: var(--green); color: #000; }
+    .m-post { background: var(--accent); color: #fff; }
+    .m-patch { background: #b45309; color: #fff; }
+    .m-del { background: #b91c1c; color: #fff; }
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+    .toc-title { font-weight: 600; margin: 0 0 0.5rem; }
+    .toc ul { margin: 0; padding-left: 1.25rem; }
+    .toc a { color: var(--text-muted); }
+    .toc a:hover { color: var(--accent); }
+    .section-row { background: var(--surface) !important; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Documentación API — Rutas de endpoints</h1>
+      <p class="subtitle">Base URL: <code>https://tu-dominio.com</code> o <code>http://localhost:3000</code> · JSON, UTF-8 · Errores: <code>{ "error": "mensaje" }</code></p>
+    </header>
+
+    <nav class="toc" aria-label="Índice">
+      <p class="toc-title">Índice</p>
+      <ul>
+        <li><a href="#auth">Auth (registro, login, sesión)</a></li>
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#categorias">Categorías</a></li>
+        <li><a href="#combos">Combos</a></li>
+        <li><a href="#promociones">Promociones</a></li>
+        <li><a href="#pedidos">Pedidos</a></li>
+        <li><a href="#clientes">Clientes</a></li>
+        <li><a href="#pagos">Pagos</a></li>
+        <li><a href="#usuarios">Usuarios (panel)</a></li>
+        <li><a href="#configuracion">Configuración</a></li>
+        <li><a href="#logs">Logs y reportes</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <p><strong>Autenticación:</strong> Casi todos los endpoints requieren sesión (cookie <code>admin_session</code>). Solo registro y login son públicos. Los de <code>/api/v1/*</code> requieren rol <strong>ADMIN</strong>. Header: <code>Content-Type: application/json</code>.</p>
+
+      <h2 id="auth">Auth (registro, login, sesión)</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/auth/register</code></td><td>Body: email, password (mín. 8), name?</td><td>Registro. Respuesta: ok, user, message.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/auth/login</code></td><td>Body: email, password</td><td>Login. Respuesta: ok, user. Establece cookie de sesión.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/auth/me</code></td><td>—</td><td>Usuario actual. Respuesta: user (o null si 401).</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/auth/logout</code></td><td>—</td><td>Cerrar sesión. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="productos">Productos</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/products</code></td><td>Query: categoryId?</td><td>Lista productos. Respuesta: products.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/products</code></td><td>Body: name, categoryId, price, available?, imageUrl?</td><td>Crear producto. Respuesta: product.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/products/[id]</code></td><td>—</td><td>Detalle producto. Respuesta: product.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/products/[id]</code></td><td>Body: name?, categoryId?, price?, available?, imageUrl?</td><td>Actualizar producto. Respuesta: product.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/products/[id]</code></td><td>—</td><td>Eliminar producto. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="categorias">Categorías</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/categories</code></td><td>—</td><td>Lista categorías. Respuesta: categories.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/categories</code></td><td>Body: name</td><td>Crear categoría. Respuesta: category.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/categories/[id]</code></td><td>Body: name</td><td>Actualizar categoría. Respuesta: category.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/categories/[id]</code></td><td>—</td><td>Eliminar categoría. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="combos">Combos</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/combos</code></td><td>—</td><td>Lista combos. Respuesta: combos.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/combos</code></td><td>Body: name, price, active?, items? [{ productId, quantity }]</td><td>Crear combo. Respuesta: combo.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/combos/[id]</code></td><td>—</td><td>Detalle combo. Respuesta: combo.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/combos/[id]</code></td><td>Body: name?, price?, active?, items?</td><td>Actualizar combo. Respuesta: combo.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/combos/[id]</code></td><td>—</td><td>Eliminar combo. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="promociones">Promociones</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/promotions</code></td><td>Query: type? (COUPON | TIME)</td><td>Lista promociones. Respuesta: promotions.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/promotions</code></td><td>Body: type (COUPON|TIME), code?, discountType?, value?, validUntil?, maxUses?, name?, timeStart?, timeEnd?, active?</td><td>Crear promoción. Respuesta: promotion.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/promotions/[id]</code></td><td>—</td><td>Detalle promoción. Respuesta: promotion.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/promotions/[id]</code></td><td>Body: campos editables</td><td>Actualizar promoción. Respuesta: promotion.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/promotions/[id]</code></td><td>—</td><td>Eliminar promoción. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="pedidos">Pedidos</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/orders</code></td><td>Query: status?, deliveryType? (LOCAL|DOMICILIO|todos), search?, clientId?</td><td>Lista pedidos. Respuesta: orders.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/orders/[id]</code></td><td>—</td><td>Detalle pedido. Respuesta: order.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/orders/[id]</code></td><td>Body: status (CONFIRMADO|EN_PREPARACION|LISTO|ENTREGADO|CANCELADO)</td><td>Actualizar estado. Respuesta: order.</td></tr>
+      </table>
+
+      <h2 id="clientes">Clientes</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/clients</code></td><td>Query: search?</td><td>Lista clientes. Respuesta: clients.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/clients</code></td><td>Body: email, password (mín. 6), name?, phone?, address?</td><td>Crear cliente. Respuesta: client.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/clients/[id]</code></td><td>—</td><td>Detalle cliente. Respuesta: client.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/clients/[id]</code></td><td>Body: name?, phone?, address?, blocked?</td><td>Actualizar cliente. Respuesta: client.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/clients/[id]</code></td><td>—</td><td>Eliminar cliente. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="pagos">Pagos</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/payments</code></td><td>Query: orderId?, method? (EFECTIVO|TARJETA)</td><td>Lista pagos. Respuesta: payments.</td></tr>
+        <tr><td><span class="method m-post">POST</span></td><td><code>/api/v1/payments</code></td><td>Body: orderId, amount, method (EFECTIVO|TARJETA), status?</td><td>Registrar pago. Respuesta: payment.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/payments/[id]</code></td><td>—</td><td>Detalle pago. Respuesta: payment.</td></tr>
+      </table>
+
+      <h2 id="usuarios">Usuarios (panel admin)</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/users</code></td><td>—</td><td>Lista usuarios del panel. Respuesta: users.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/users/[id]</code></td><td>Body: name?, role?</td><td>Actualizar usuario. Respuesta: user.</td></tr>
+        <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/v1/users/[id]</code></td><td>—</td><td>Eliminar usuario. Respuesta: ok.</td></tr>
+      </table>
+
+      <h2 id="configuracion">Configuración del negocio</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/settings</code></td><td>—</td><td>Obtener configuración. Respuesta: settings.</td></tr>
+        <tr><td><span class="method m-patch">PATCH</span></td><td><code>/api/v1/settings</code></td><td>Body: businessName?, ruc?, address?, phone?, email?, logoUrl?, hoursJson?, shippingCost?, freeShippingFrom?, igvPercent?, pricesIncludeIgv?</td><td>Crear o actualizar configuración. Respuesta: settings.</td></tr>
+      </table>
+
+      <h2 id="logs">Logs y reportes</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Query / Body</th><th>Descripción</th></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/audit-logs</code></td><td>Query: search?, from?, to?, logType? (ACTION|STATE_CHANGE|ERROR|todos), userId?, limit?, page?</td><td>Lista logs de auditoría. Respuesta: logs, total.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/audit-logs/[id]</code></td><td>—</td><td>Detalle log. Respuesta: log.</td></tr>
+        <tr><td><span class="method m-get">GET</span></td><td><code>/api/v1/reports</code></td><td>Query: from?, to?, o preset? (hoy|semana|mes)</td><td>Reportes agregados (ventas, productos, clientes, horarios). Respuesta: sales, topProducts, recurringClients, peakHours.</td></tr>
+      </table>
+
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 2rem;">Códigos: 200 OK · 400 Bad Request · 401 No autorizado · 403 Sin permiso · 409 Conflicto · 500 Error interno.</p>
+    </main>
+  </div>
+</body>
+</html>

@@ -59,7 +59,7 @@ export default function MenuPage() {
     setLoadingCategories(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch("/api/v1/categories");
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Error al cargar categorías");
@@ -80,8 +80,8 @@ export default function MenuPage() {
     try {
       const url =
         categoryFilterId === ""
-          ? "/api/admin/products"
-          : `/api/admin/products?categoryId=${categoryFilterId}`;
+          ? "/api/v1/products"
+          : `/api/v1/products?categoryId=${categoryFilterId}`;
       const res = await fetch(url);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -111,7 +111,7 @@ export default function MenuPage() {
     setSavingCategory(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/categories", {
+      const res = await fetch("/api/v1/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -133,7 +133,7 @@ export default function MenuPage() {
     setSavingCategory(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/categories/${id}`, {
+      const res = await fetch(`/api/v1/categories/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -156,7 +156,7 @@ export default function MenuPage() {
     setSavingCategory(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/v1/categories/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al eliminar categoría");
       setEditingCategoryId(null);
@@ -220,7 +220,7 @@ export default function MenuPage() {
         imageUrl: productForm.imageUrl.trim() || null,
       };
       if (productForm.id) {
-        const res = await fetch(`/api/admin/products/${productForm.id}`, {
+        const res = await fetch(`/api/v1/products/${productForm.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -228,7 +228,7 @@ export default function MenuPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Error al actualizar producto");
       } else {
-        const res = await fetch("/api/admin/products", {
+        const res = await fetch("/api/v1/products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -249,7 +249,7 @@ export default function MenuPage() {
     if (!confirm("¿Eliminar este producto?")) return;
     setError(null);
     try {
-      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/v1/products/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al eliminar producto");
       if (productForm.id === id) resetProductForm();
@@ -261,7 +261,7 @@ export default function MenuPage() {
 
   const handleToggleAvailable = async (p: Product) => {
     try {
-      const res = await fetch(`/api/admin/products/${p.id}`, {
+      const res = await fetch(`/api/v1/products/${p.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ available: !p.available }),

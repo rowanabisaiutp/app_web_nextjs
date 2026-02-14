@@ -9,6 +9,7 @@ export type OrderListItem = {
   status: string;
   total: string;
   deliveryType: string;
+  deliveryAddress: string | null;
   createdAt: Date;
 };
 
@@ -36,16 +37,26 @@ const VALID_STATUSES: OrderStatus[] = [
 ];
 
 /**
- * Lista pedidos con filtros opcionales (estado, búsqueda por cliente/número).
+ * Lista pedidos con filtros opcionales (estado, tipo de entrega, búsqueda, clientId).
  */
 export async function listOrders(filters?: {
   status?: OrderStatus | "todos";
+  deliveryType?: "LOCAL" | "DOMICILIO" | "todos";
   search?: string;
+  clientId?: number;
 }): Promise<OrderListItem[]> {
   const where: Parameters<typeof prisma.order.findMany>[0]["where"] = {};
 
   if (filters?.status && filters.status !== "todos") {
     where.status = filters.status as OrderStatus;
+  }
+
+  if (filters?.deliveryType && filters.deliveryType !== "todos") {
+    where.deliveryType = filters.deliveryType;
+  }
+
+  if (filters?.clientId != null) {
+    where.clientId = filters.clientId;
   }
 
   if (filters?.search?.trim()) {
@@ -73,6 +84,7 @@ export async function listOrders(filters?: {
     status: o.status,
     total: String(o.total),
     deliveryType: o.deliveryType,
+    deliveryAddress: o.deliveryAddress ?? null,
     createdAt: o.createdAt,
   }));
 }

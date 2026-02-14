@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API para clientes (Flutter)</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2d2d2d;
+      --text: #e5e5e5;
+      --text-muted: #a3a3a3;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --code-bg: #262626;
+      --font-sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      margin: 0 0 2rem;
+      font-size: 0.95rem;
+    }
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+    }
+    p { margin: 0 0 1rem; }
+    ul {
+      margin: 0 0 1rem;
+      padding-left: 1.5rem;
+    }
+    li { margin: 0.25rem 0; }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+    th, td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--text);
+    }
+    td { background: var(--bg); }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    code, pre, .code-block {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+    code {
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: #fbbf24;
+    }
+    pre {
+      background: var(--code-bg);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--border);
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--text);
+    }
+    .method {
+      display: inline-block;
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .method-get { background: var(--green); color: #000; }
+    .method-post { background: var(--accent); color: #fff; }
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .toc-title { font-weight: 600; margin: 0 0 0.5rem; }
+    .toc ul { margin: 0; padding-left: 1.25rem; }
+    .toc a { color: var(--text-muted); }
+    .toc a:hover { color: var(--accent); }
+    .endpoint-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 0.5rem 0;
+    }
+    .badge-200 { color: var(--green); }
+    .badge-400 { color: var(--amber); }
+    .badge-401 { color: var(--red); }
+    .badge-403 { color: var(--red); }
+    .badge-409 { color: var(--amber); }
+    .badge-500 { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Documentación de API para clientes</h1>
+      <p class="subtitle">Consumo desde aplicación móvil Flutter. Contrato entre backend Next.js y la app.</p>
+    </header>
+
+    <nav class="toc" aria-label="Índice">
+      <p class="toc-title">Índice</p>
+      <ul>
+        <li><a href="#general">Información general</a></li>
+        <li><a href="#auth">Autenticación</a></li>
+        <li><a href="#register">1. Registro</a></li>
+        <li><a href="#login">2. Login</a></li>
+        <li><a href="#me">3. Usuario actual (me)</a></li>
+        <li><a href="#logout">4. Logout</a></li>
+        <li><a href="#flutter">Uso desde Flutter (Dart)</a></li>
+        <li><a href="#resumen">Resumen de endpoints</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <h2 id="general">Información general</h2>
+      <table>
+        <tr><th>Concepto</th><th>Valor</th></tr>
+        <tr><td><strong>Base URL</strong></td><td><code>https://tu-dominio.com</code> (producción) o <code>http://localhost:3000</code> (desarrollo)</td></tr>
+        <tr><td><strong>Formato</strong></td><td>JSON (<code>Content-Type: application/json</code>), UTF-8</td></tr>
+        <tr><td><strong>Autenticación</strong></td><td>Ver sección <a href="#auth">Autenticación</a></td></tr>
+      </table>
+      <h3>Códigos HTTP</h3>
+      <table>
+        <tr><th>Código</th><th>Significado</th></tr>
+        <tr><td><code>200</code></td><td>OK</td></tr>
+        <tr><td><code>400</code></td><td>Bad Request – datos inválidos o faltantes</td></tr>
+        <tr><td><code>401</code></td><td>No autorizado – sin sesión o token inválido</td></tr>
+        <tr><td><code>403</code></td><td>Sin permiso – rol insuficiente</td></tr>
+        <tr><td><code>409</code></td><td>Conflicto – p. ej. email ya registrado</td></tr>
+        <tr><td><code>500</code></td><td>Error interno del servidor</td></tr>
+      </table>
+      <p>Las respuestas de error suelen incluir un cuerpo JSON con el campo <code>error</code> (string):</p>
+      <pre><code>{ "error": "Mensaje descriptivo" }</code></pre>
+
+      <hr />
+
+      <h2 id="auth">Autenticación</h2>
+      <p>La API actual usa <strong>cookies</strong> para la sesión (<code>admin_session</code>, HttpOnly). Para una app Flutter nativa es recomendable que el backend exponga también <strong>token JWT en el cuerpo</strong> y acepte el header <code>Authorization: Bearer &lt;token&gt;</code>. Mientras tanto, la app puede:</p>
+      <ul>
+        <li>Usar un cliente HTTP que guarde y envíe cookies (p. ej. <code>CookieManager</code> con <code>dio_cookie_manager</code>), o</li>
+        <li>Esperar a que el backend añada soporte Bearer y documentar aquí la URL y formato.</li>
+      </ul>
+      <p>En esta doc se describe el contrato actual (cookies) y el cuerpo de las respuestas para que Flutter pueda mostrar datos (p. ej. <code>user</code>) aunque el almacenamiento de sesión sea por cookies.</p>
+
+      <hr />
+
+      <h2 id="endpoints">Endpoints</h2>
+
+      <h3 id="register">1. Registro de usuario</h3>
+      <p>Crea una cuenta. El usuario queda con rol <code>ADMIN</code> en el sistema actual.</p>
+      <div class="endpoint-summary">
+        <span class="method method-post">POST</span>
+        <code>/api/auth/register</code>
+      </div>
+      <p><strong>Headers:</strong></p>
+      <pre><code>Content-Type: application/json</code></pre>
+      <p><strong>Body (JSON):</strong></p>
+      <table>
+        <tr><th>Campo</th><th>Tipo</th><th>Obligatorio</th><th>Descripción</th></tr>
+        <tr><td><code>email</code></td><td>string</td><td>Sí</td><td>Email (se normaliza a minúsculas)</td></tr>
+        <tr><td><code>password</code></td><td>string</td><td>Sí</td><td>Mínimo 8 caracteres</td></tr>
+        <tr><td><code>name</code></td><td>string</td><td>No</td><td>Nombre mostrado</td></tr>
+      </table>
+      <p><strong>Ejemplo body:</strong></p>
+      <pre><code>{
+  "email": "usuario@ejemplo.com",
+  "password": "miPassword123",
+  "name": "Juan Pérez"
+}</code></pre>
+      <p><strong>Respuesta exitosa (200):</strong></p>
+      <pre><code>{
+  "ok": true,
+  "user": {
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "name": "Juan Pérez",
+    "role": "ADMIN"
+  },
+  "message": "Cuenta creada. Ya puedes iniciar sesión."
+}</code></pre>
+      <p><strong>Errores:</strong></p>
+      <table>
+        <tr><th>Status</th><th>Condición</th><th><code>error</code> (ejemplo)</th></tr>
+        <tr><td class="badge-400">400</td><td>Faltan email o password</td><td>"Email y contraseña son obligatorios"</td></tr>
+        <tr><td class="badge-400">400</td><td>Email vacío tras normalizar</td><td>"Email no válido"</td></tr>
+        <tr><td class="badge-400">400</td><td>Contraseña &lt; 8 caracteres</td><td>"La contraseña debe tener al menos 8 caracteres"</td></tr>
+        <tr><td class="badge-409">409</td><td>Email ya existe</td><td>"Ya existe una cuenta con este email"</td></tr>
+        <tr><td class="badge-500">500</td><td>Error interno</td><td>"Error al crear la cuenta"</td></tr>
+      </table>
+
+      <h3 id="login">2. Inicio de sesión (login)</h3>
+      <p>Inicia sesión y establece la cookie de sesión en la respuesta.</p>
+      <div class="endpoint-summary">
+        <span class="method method-post">POST</span>
+        <code>/api/auth/login</code>
+      </div>
+      <p><strong>Headers:</strong></p>
+      <pre><code>Content-Type: application/json</code></pre>
+      <p><strong>Body (JSON):</strong></p>
+      <table>
+        <tr><th>Campo</th><th>Tipo</th><th>Obligatorio</th></tr>
+        <tr><td><code>email</code></td><td>string</td><td>Sí</td></tr>
+        <tr><td><code>password</code></td><td>string</td><td>Sí</td></tr>
+      </table>
+      <p><strong>Ejemplo body:</strong></p>
+      <pre><code>{
+  "email": "usuario@ejemplo.com",
+  "password": "miPassword123"
+}</code></pre>
+      <p><strong>Respuesta exitosa (200):</strong></p>
+      <pre><code>{
+  "ok": true,
+  "user": {
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "name": "Juan Pérez"
+  }
+}</code></pre>
+      <p><strong>Errores:</strong></p>
+      <table>
+        <tr><th>Status</th><th>Condición</th><th><code>error</code></th></tr>
+        <tr><td class="badge-400">400</td><td>Faltan email o password</td><td>"Email y contraseña son obligatorios"</td></tr>
+        <tr><td class="badge-401">401</td><td>Credenciales incorrectas</td><td>"Credenciales incorrectas"</td></tr>
+        <tr><td class="badge-500">500</td><td>Error interno</td><td>"Error al iniciar sesión"</td></tr>
+      </table>
+      <p><strong>Nota:</strong> La sesión se guarda en una cookie. En Flutter, si usas <code>dio</code> + <code>dio_cookie_manager</code> + <code>cookie_jar</code>, usa el mismo <code>Dio</code> (o mismo <code>CookieJar</code>) para las peticiones subsiguientes.</p>
+
+      <h3 id="me">3. Obtener usuario actual (me)</h3>
+      <p>Devuelve el usuario de la sesión actual. Requiere que la cookie de sesión esté enviada.</p>
+      <div class="endpoint-summary">
+        <span class="method method-get">GET</span>
+        <code>/api/auth/me</code>
+      </div>
+      <p><strong>Headers:</strong> Cookie enviada automáticamente si el cliente guarda cookies de la respuesta de login.</p>
+      <p><strong>Respuesta exitosa (200):</strong></p>
+      <pre><code>{
+  "user": {
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "name": "Juan Pérez",
+    "role": "ADMIN"
+  }
+}</code></pre>
+      <p><strong>Sin sesión o token inválido (401):</strong></p>
+      <pre><code>{ "user": null }</code></pre>
+
+      <h3 id="logout">4. Cerrar sesión (logout)</h3>
+      <p>Invalida la sesión (borra la cookie). No requiere body.</p>
+      <div class="endpoint-summary">
+        <span class="method method-post">POST</span>
+        <code>/api/auth/logout</code>
+      </div>
+      <p><strong>Respuesta exitosa (200):</strong></p>
+      <pre><code>{ "ok": true }</code></pre>
+
+      <hr />
+
+      <h2 id="flutter">Uso desde Flutter (Dart)</h2>
+      <h3>Dependencias sugeridas</h3>
+      <pre><code>dependencies:
+  dio: ^5.4.0
+  dio_cookie_manager: ^3.1.1
+  cookie_jar: ^4.0.8
+  flutter_secure_storage: ^9.0.0   # si más adelante usas JWT</code></pre>
+      <h3>Cliente base con cookies (ejemplo)</h3>
+      <pre><code>import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+
+class ApiClient {
+  late final Dio _dio;
+  static const String baseUrl = 'https://tu-dominio.com';
+
+  ApiClient() {
+    _dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+    _dio.interceptors.add(CookieManager(CookieJar()));
+  }
+
+  Future&lt;Map&lt;String, dynamic&gt;&gt; register({
+    required String email,
+    required String password,
+    String? name,
+  }) async {
+    final res = await _dio.post('/api/auth/register', data: {
+      'email': email,
+      'password': password,
+      if (name != null && name.isNotEmpty) 'name': name,
+    });
+    return res.data as Map&lt;String, dynamic&gt;;
+  }
+
+  Future&lt;Map&lt;String, dynamic&gt;&gt; login({
+    required String email,
+    required String password,
+  }) async {
+    final res = await _dio.post('/api/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    return res.data as Map&lt;String, dynamic&gt;;
+  }
+
+  Future&lt;Map&lt;String, dynamic&gt;?&gt; me() async {
+    try {
+      final res = await _dio.get('/api/auth/me');
+      return res.data as Map&lt;String, dynamic&gt;;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) return {'user': null};
+      rethrow;
+    }
+  }
+
+  Future&lt;void&gt; logout() async {
+    await _dio.post('/api/auth/logout');
+  }
+}</code></pre>
+      <h3>Modelo User (ejemplo)</h3>
+      <pre><code>class User {
+  final int id;
+  final String email;
+  final String? name;
+  final String role;
+
+  User({ required this.id, required this.email, this.name, required this.role });
+
+  factory User.fromJson(Map&lt;String, dynamic&gt; json) {
+    return User(
+      id: json['id'] as int,
+      email: json['email'] as String,
+      name: json['name'] as String?,
+      role: json['role'] as String? ?? 'ADMIN',
+    );
+  }
+}
+
+// Uso tras login o /me
+final data = await api.login(email: 'a@b.com', password: 'pass');
+final user = data['user'] != null
+    ? User.fromJson(data['user'] as Map&lt;String, dynamic&gt;)
+    : null;</code></pre>
+      <h3>Tratamiento de errores</h3>
+      <pre><code>try {
+  await api.login(email: email, password: password);
+} on DioException catch (e) {
+  final body = e.response?.data;
+  final message = body is Map &amp;&amp; body['error'] != null
+      ? body['error'] as String
+      : 'Error de conexión';
+  // Mostrar message en la UI
+}</code></pre>
+
+      <hr />
+
+      <h2 id="extensiones">Posibles extensiones</h2>
+      <p>Si el backend expone endpoints <strong>públicos o para clientes</strong> (menú, crear pedido, aplicar cupón), seguirían la misma base URL y convenciones:</p>
+      <ul>
+        <li><strong>GET</strong> sin auth (o con token opcional): listar categorías, productos, combos, promociones activas.</li>
+        <li><strong>POST</strong> con sesión/token: crear pedido, validar cupón.</li>
+      </ul>
+
+      <h2 id="resumen">Resumen de endpoints (clientes)</h2>
+      <table>
+        <tr><th>Método</th><th>Ruta</th><th>Descripción</th></tr>
+        <tr><td><span class="method method-post">POST</span></td><td><code>/api/auth/register</code></td><td>Registro</td></tr>
+        <tr><td><span class="method method-post">POST</span></td><td><code>/api/auth/login</code></td><td>Login (establece cookie)</td></tr>
+        <tr><td><span class="method method-get">GET</span></td><td><code>/api/auth/me</code></td><td>Usuario actual</td></tr>
+        <tr><td><span class="method method-post">POST</span></td><td><code>/api/auth/logout</code></td><td>Cerrar sesión</td></tr>
+      </table>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Los endpoints bajo <code>/api/v1/*</code> requieren sesión de administrador y están pensados para el panel web; no forman parte del contrato para la app móvil cliente.</p>
+    </main>
+  </div>
+</body>
+</html>
