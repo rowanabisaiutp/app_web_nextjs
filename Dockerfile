@@ -53,8 +53,8 @@ RUN apt-get update -qq && \
 # Copy built application
 COPY --from=build /app /app
 
-# Entrypoint prepares the database.
-ENTRYPOINT [ "/app/docker-entrypoint.js" ]
+# Run entrypoint with node explicitly so CRLF in the script never breaks the shebang
+ENTRYPOINT [ "node", "/app/docker-entrypoint.js" ]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
