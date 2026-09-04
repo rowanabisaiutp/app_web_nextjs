@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
+import MyBusinessesPanel from "@/components/admin/dashboard/MyBusinessesPanel";
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
@@ -41,11 +42,13 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6">
+      <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 mb-8">
         <p className="text-neutral-600 dark:text-neutral-400">
           Bienvenido{payload?.email ? `, ${payload.email}` : ""}. Aquí puedes gestionar el sitio.
         </p>
       </div>
+
+      <MyBusinessesPanel />
     </div>
   );
 }

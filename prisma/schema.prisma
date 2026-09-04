@@ -58,6 +58,18 @@ model User {
   role         Role     @default(ADMIN)
   createdAt    DateTime @default(now())
   auditLogs    AuditLog[]
+  businesses   Business[]
+}
+
+model Business {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  address   String?  @db.Text
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+  createdAt DateTime @default(now())
 }
 
 model Client {

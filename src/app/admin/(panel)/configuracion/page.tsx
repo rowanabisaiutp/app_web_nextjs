@@ -240,6 +240,13 @@ export default function ConfiguracionPage() {
                     aria-label="Dirección"
                   />
                 </div>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1.5">
+                  Para marcar la ubicación exacta en el mapa (uno o varios puntos), ve al{" "}
+                  <a href="/admin" className="underline hover:text-neutral-700 dark:hover:text-neutral-300">
+                    Dashboard → Mis negocios
+                  </a>
+                  .
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">

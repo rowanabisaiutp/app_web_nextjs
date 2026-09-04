@@ -11,8 +11,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { AdminPageHeader, AdminCard, AdminTable } from "@/components/admin";
 import { formatDateTime } from "@/lib/utils/format";
+
+const DeliveryMap = dynamic(() => import("@/components/admin/deliveries/DeliveryMap"), {
+  ssr: false,
+});
 
 const ESTADOS = [
   { id: "todos", label: "Todos" },
@@ -368,6 +373,11 @@ export default function EntregasPage() {
                   <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
                     Notas: {selectedOrder.notes}
                   </p>
+                )}
+                {selectedOrder.deliveryType === "DOMICILIO" && selectedOrder.deliveryAddress && (
+                  <div className="mt-4">
+                    <DeliveryMap address={selectedOrder.deliveryAddress} />
+                  </div>
                 )}
               </div>
             ) : (
