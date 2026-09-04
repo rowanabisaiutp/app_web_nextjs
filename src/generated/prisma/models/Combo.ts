@@ -224,7 +224,6 @@ export type ComboOrderByWithRelationInput = {
   price?: Prisma.SortOrder
   active?: Prisma.SortOrder
   items?: Prisma.SortOrderInput | Prisma.SortOrder
-  _relevance?: Prisma.ComboOrderByRelevanceInput
 }
 
 export type ComboWhereUniqueInput = Prisma.AtLeast<{
@@ -315,12 +314,6 @@ export type ComboUncheckedUpdateManyInput = {
   items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
-export type ComboOrderByRelevanceInput = {
-  fields: Prisma.ComboOrderByRelevanceFieldEnum | Prisma.ComboOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type ComboCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -363,7 +356,21 @@ export type ComboSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   items?: boolean
 }, ExtArgs["result"]["combo"]>
 
+export type ComboSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  price?: boolean
+  active?: boolean
+  items?: boolean
+}, ExtArgs["result"]["combo"]>
 
+export type ComboSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  price?: boolean
+  active?: boolean
+  items?: boolean
+}, ExtArgs["result"]["combo"]>
 
 export type ComboSelectScalar = {
   id?: boolean
@@ -502,6 +509,30 @@ export interface ComboDelegate<ExtArgs extends runtime.Types.Extensions.Internal
   createMany<T extends ComboCreateManyArgs>(args?: Prisma.SelectSubset<T, ComboCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Combos and returns the data saved in the database.
+   * @param {ComboCreateManyAndReturnArgs} args - Arguments to create many Combos.
+   * @example
+   * // Create many Combos
+   * const combo = await prisma.combo.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Combos and only return the `id`
+   * const comboWithIdOnly = await prisma.combo.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends ComboCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ComboCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComboPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Combo.
    * @param {ComboDeleteArgs} args - Arguments to delete one Combo.
    * @example
@@ -564,6 +595,36 @@ export interface ComboDelegate<ExtArgs extends runtime.Types.Extensions.Internal
    * 
    */
   updateMany<T extends ComboUpdateManyArgs>(args: Prisma.SelectSubset<T, ComboUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Combos and returns the data updated in the database.
+   * @param {ComboUpdateManyAndReturnArgs} args - Arguments to update many Combos.
+   * @example
+   * // Update many Combos
+   * const combo = await prisma.combo.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Combos and only return the `id`
+   * const comboWithIdOnly = await prisma.combo.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends ComboUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ComboUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComboPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Combo.
@@ -967,6 +1028,25 @@ export type ComboCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Combo createManyAndReturn
+ */
+export type ComboCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Combo
+   */
+  select?: Prisma.ComboSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Combo
+   */
+  omit?: Prisma.ComboOmit<ExtArgs> | null
+  /**
+   * The data used to create many Combos.
+   */
+  data: Prisma.ComboCreateManyInput | Prisma.ComboCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * Combo update
  */
 export type ComboUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -992,6 +1072,32 @@ export type ComboUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
  * Combo updateMany
  */
 export type ComboUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update Combos.
+   */
+  data: Prisma.XOR<Prisma.ComboUpdateManyMutationInput, Prisma.ComboUncheckedUpdateManyInput>
+  /**
+   * Filter which Combos to update
+   */
+  where?: Prisma.ComboWhereInput
+  /**
+   * Limit how many Combos to update.
+   */
+  limit?: number
+}
+
+/**
+ * Combo updateManyAndReturn
+ */
+export type ComboUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Combo
+   */
+  select?: Prisma.ComboSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Combo
+   */
+  omit?: Prisma.ComboOmit<ExtArgs> | null
   /**
    * The data used to update Combos.
    */

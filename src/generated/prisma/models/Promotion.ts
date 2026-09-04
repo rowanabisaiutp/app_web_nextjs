@@ -317,7 +317,6 @@ export type PromotionOrderByWithRelationInput = {
   timeEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  _relevance?: Prisma.PromotionOrderByRelevanceInput
 }
 
 export type PromotionWhereUniqueInput = Prisma.AtLeast<{
@@ -498,12 +497,6 @@ export type PromotionUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PromotionOrderByRelevanceInput = {
-  fields: Prisma.PromotionOrderByRelevanceFieldEnum | Prisma.PromotionOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type PromotionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -608,7 +601,39 @@ export type PromotionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
 }, ExtArgs["result"]["promotion"]>
 
+export type PromotionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  type?: boolean
+  code?: boolean
+  discountType?: boolean
+  value?: boolean
+  validUntil?: boolean
+  maxUses?: boolean
+  usedCount?: boolean
+  name?: boolean
+  description?: boolean
+  timeStart?: boolean
+  timeEnd?: boolean
+  active?: boolean
+  createdAt?: boolean
+}, ExtArgs["result"]["promotion"]>
 
+export type PromotionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  type?: boolean
+  code?: boolean
+  discountType?: boolean
+  value?: boolean
+  validUntil?: boolean
+  maxUses?: boolean
+  usedCount?: boolean
+  name?: boolean
+  description?: boolean
+  timeStart?: boolean
+  timeEnd?: boolean
+  active?: boolean
+  createdAt?: boolean
+}, ExtArgs["result"]["promotion"]>
 
 export type PromotionSelectScalar = {
   id?: boolean
@@ -765,6 +790,30 @@ export interface PromotionDelegate<ExtArgs extends runtime.Types.Extensions.Inte
   createMany<T extends PromotionCreateManyArgs>(args?: Prisma.SelectSubset<T, PromotionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Promotions and returns the data saved in the database.
+   * @param {PromotionCreateManyAndReturnArgs} args - Arguments to create many Promotions.
+   * @example
+   * // Create many Promotions
+   * const promotion = await prisma.promotion.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Promotions and only return the `id`
+   * const promotionWithIdOnly = await prisma.promotion.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PromotionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PromotionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Promotion.
    * @param {PromotionDeleteArgs} args - Arguments to delete one Promotion.
    * @example
@@ -827,6 +876,36 @@ export interface PromotionDelegate<ExtArgs extends runtime.Types.Extensions.Inte
    * 
    */
   updateMany<T extends PromotionUpdateManyArgs>(args: Prisma.SelectSubset<T, PromotionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Promotions and returns the data updated in the database.
+   * @param {PromotionUpdateManyAndReturnArgs} args - Arguments to update many Promotions.
+   * @example
+   * // Update many Promotions
+   * const promotion = await prisma.promotion.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Promotions and only return the `id`
+   * const promotionWithIdOnly = await prisma.promotion.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PromotionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PromotionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Promotion.
@@ -1239,6 +1318,25 @@ export type PromotionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
+ * Promotion createManyAndReturn
+ */
+export type PromotionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Promotion
+   */
+  select?: Prisma.PromotionSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Promotion
+   */
+  omit?: Prisma.PromotionOmit<ExtArgs> | null
+  /**
+   * The data used to create many Promotions.
+   */
+  data: Prisma.PromotionCreateManyInput | Prisma.PromotionCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * Promotion update
  */
 export type PromotionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1264,6 +1362,32 @@ export type PromotionUpdateArgs<ExtArgs extends runtime.Types.Extensions.Interna
  * Promotion updateMany
  */
 export type PromotionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update Promotions.
+   */
+  data: Prisma.XOR<Prisma.PromotionUpdateManyMutationInput, Prisma.PromotionUncheckedUpdateManyInput>
+  /**
+   * Filter which Promotions to update
+   */
+  where?: Prisma.PromotionWhereInput
+  /**
+   * Limit how many Promotions to update.
+   */
+  limit?: number
+}
+
+/**
+ * Promotion updateManyAndReturn
+ */
+export type PromotionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Promotion
+   */
+  select?: Prisma.PromotionSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Promotion
+   */
+  omit?: Prisma.PromotionOmit<ExtArgs> | null
   /**
    * The data used to update Promotions.
    */

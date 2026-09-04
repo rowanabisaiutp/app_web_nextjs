@@ -1,5 +1,5 @@
 {
-  "name": "next-prisma-mysql",
+  "name": "next-prisma-supabase",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,17 +14,19 @@
     "db:seed": "pnpm prisma db seed"
   },
   "dependencies": {
-    "@prisma/adapter-mariadb": "^7",
+    "@prisma/adapter-pg": "^7",
     "@prisma/client": "^7",
     "bcryptjs": "^2",
     "jose": "^5",
     "lucide-react": "^0.460.0",
     "next": "16.1.6",
+    "pg": "^8",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2",
+    "@types/pg": "^8",
     "dotenv": "^16",
     "prisma": "^7",
     "@tailwindcss/postcss": "^4",

@@ -1,5 +1,5 @@
 /**
- * Construye DATABASE_URL desde tus variables DB_* (Clever Cloud / .env).
+ * Construye DATABASE_URL desde tus variables DB_* (Supabase / .env).
  * Prisma usa DATABASE_URL; si no está definida, la generamos desde DB_HOST, DB_USER, etc.
  */
 function buildDatabaseUrl(): string {
@@ -10,7 +10,7 @@ function buildDatabaseUrl(): string {
   const user = process.env.DB_USER;
   const password = process.env.DB_PASSWORD;
   const db = process.env.DB_NAME;
-  const port = process.env.DB_PORT ?? "3306";
+  const port = process.env.DB_PORT ?? "5432";
 
   if (!host || !user || !password || !db) {
     throw new Error(
@@ -19,7 +19,7 @@ function buildDatabaseUrl(): string {
   }
 
   const encodedPassword = encodeURIComponent(password);
-  return `mysql://${user}:${encodedPassword}@${host}:${port}/${db}`;
+  return `postgresql://${user}:${encodedPassword}@${host}:${port}/${db}`;
 }
 
 /**

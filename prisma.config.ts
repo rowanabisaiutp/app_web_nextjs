@@ -1,23 +1,9 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-function getDatabaseUrl(): string {
-  const url = process.env.DATABASE_URL;
-  if (url) return url;
-
-  const host = process.env.DB_HOST;
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD;
-  const db = process.env.DB_NAME;
-  const port = process.env.DB_PORT ?? "3306";
-
-  if (!host || !user || !password || !db) {
-    throw new Error(
-      "Faltan variables. Define DATABASE_URL o DB_HOST, DB_USER, DB_PASSWORD, DB_NAME en .env"
-    );
-  }
-  return `mysql://${user}:${encodeURIComponent(password)}@${host}:${port}/${db}`;
-}
+// La CLI (db push / migrate / studio) necesita conexion de sesion, no el
+// transaction-mode pooler que usa la app en runtime (src/lib/prisma.ts).
+const migrationUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -26,6 +12,6 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: getDatabaseUrl(),
+    url: migrationUrl,
   },
 });

@@ -1,29 +1,23 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-function getConfig() {
+function getConnectionString(): string {
   const url = process.env.DATABASE_URL;
-  if (url) {
-    const match = url.match(/mysql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
-    if (match) {
-      const [, user, password, host, port, database] = match;
-      return { host, port: Number(port), user, password: decodeURIComponent(password), database };
-    }
-  }
+  if (url) return url;
+
   const host = process.env.DB_HOST;
   const user = process.env.DB_USER;
   const password = process.env.DB_PASSWORD;
   const database = process.env.DB_NAME;
-  const port = Number(process.env.DB_PORT) || 3306;
+  const port = process.env.DB_PORT ?? "5432";
   if (!host || !user || !password || !database) throw new Error("Faltan DB_* o DATABASE_URL en .env");
-  return { host, port, user, password, database };
+  return `postgresql://${user}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
 }
 
 async function main() {
-  const config = getConfig();
-  const adapter = new PrismaMariaDb(config);
+  const adapter = new PrismaPg({ connectionString: getConnectionString(), ssl: { rejectUnauthorized: false } });
   const prisma = new PrismaClient({ adapter });
 
   const email = process.env.ADMIN_EMAIL;
