@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { verifyToken, getCookieName } from "@/lib/auth";
 import {
   findUserByEmail,
+  findUserById,
   createAdminUser,
 } from "@/lib/services/auth.service";
 
@@ -8,6 +12,20 @@ const MIN_PASSWORD_LENGTH = 8;
 
 export async function POST(request: Request) {
   try {
+    const userCount = await prisma.user.count();
+    if (userCount > 0) {
+      const cookieStore = await cookies();
+      const token = cookieStore.get(getCookieName())?.value;
+      const payload = token ? await verifyToken(token) : null;
+      const requester = payload ? await findUserById(payload.userId) : null;
+      if (!requester || requester.role !== "ADMIN") {
+        return NextResponse.json(
+          { error: "No autorizado. Solo un administrador puede crear nuevas cuentas." },
+          { status: 403 }
+        );
+      }
+    }
+
     const body = await request.json();
     const { email, password, name } = body;
 
