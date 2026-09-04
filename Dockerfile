@@ -46,8 +46,9 @@ RUN pnpm prune --prod
 FROM base
 
 # Install packages needed for deployment
+# fontconfig + fonts-dejavu-core: used by sharp to render text in generated report images
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y openssl && \
+    apt-get install --no-install-recommends -y openssl fontconfig fonts-dejavu-core && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built application

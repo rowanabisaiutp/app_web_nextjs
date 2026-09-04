@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
 import { findUserById } from "@/lib/services/auth.service";
-import { askAssistant, type ChatMessage } from "@/lib/services/assistant.service";
+import {
+  askAssistant,
+  detectReportIntent,
+  describeReportIntent,
+  type ChatMessage,
+} from "@/lib/services/assistant.service";
 
 async function requireAdmin() {
   const cookieStore = await cookies();
@@ -49,6 +54,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Formato de mensaje inválido" }, { status: 400 });
     }
     messages.push({ role: m.role, content: m.content.slice(0, MAX_MESSAGE_LENGTH) });
+  }
+
+  const lastMessage = messages[messages.length - 1];
+  const intent = lastMessage.role === "user" ? detectReportIntent(lastMessage.content) : null;
+
+  if (intent) {
+    const params = new URLSearchParams({ format: intent.format, kind: intent.kind });
+    return NextResponse.json({
+      reply: describeReportIntent(intent),
+      download: {
+        url: `/api/v1/assistant/report?${params.toString()}`,
+        format: intent.format,
+      },
+    });
   }
 
   try {

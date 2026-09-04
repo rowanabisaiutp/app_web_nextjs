@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
 import MyBusinessesPanel from "@/components/admin/dashboard/MyBusinessesPanel";
-import AdminAssistant from "@/components/admin/dashboard/AdminAssistant";
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
@@ -49,10 +48,7 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2 items-start">
-        <AdminAssistant />
-        <MyBusinessesPanel />
-      </div>
+      <MyBusinessesPanel />
     </div>
   );
 }

@@ -4,11 +4,58 @@ import {
   getTopProducts,
   getPeriodPreset,
 } from "@/lib/services/report.service";
+import type { ReportFormat, ReportKind } from "@/lib/services/reportFile.service";
 
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 const DEFAULT_MODEL = "openai/gpt-oss-20b";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
+
+export type ReportIntent = { format: ReportFormat; kind: ReportKind };
+
+const FORMAT_LABELS: Record<ReportFormat, string> = {
+  pdf: "PDF",
+  word: "Word",
+  excel: "Excel",
+  image: "imagen",
+};
+
+const KIND_LABELS: Record<ReportKind, string> = {
+  summary: "resumen del negocio",
+  orders: "pedidos",
+  products: "productos más vendidos",
+  clients: "clientes",
+};
+
+/**
+ * Detecta si el mensaje del usuario pide un reporte/archivo descargable, y en
+ * qué formato/de qué tipo. Es una detección simple por palabras clave (no
+ * depende de function-calling del LLM, que no todos los modelos soportan
+ * igual) — suficiente para el caso de uso de un panel admin.
+ */
+export function detectReportIntent(message: string): ReportIntent | null {
+  const text = message.toLowerCase();
+  const wantsFile = /(reporte|report|descarga|exportar|genera|archivo|documento)/.test(text);
+  if (!wantsFile) return null;
+
+  let format: ReportFormat | null = null;
+  if (/\bpdf\b/.test(text)) format = "pdf";
+  else if (/(word|docx)/.test(text)) format = "word";
+  else if (/(excel|xlsx|xls|hoja de c[aá]lculo)/.test(text)) format = "excel";
+  else if (/(imagen|\bimg\b|png|jpg|foto)/.test(text)) format = "image";
+  if (!format) return null;
+
+  let kind: ReportKind = "summary";
+  if (/(pedido|orden)/.test(text)) kind = "orders";
+  else if (/(producto)/.test(text)) kind = "products";
+  else if (/(cliente)/.test(text)) kind = "clients";
+
+  return { format, kind };
+}
+
+export function describeReportIntent(intent: ReportIntent): string {
+  return `Aquí tienes tu reporte de ${KIND_LABELS[intent.kind]} en formato ${FORMAT_LABELS[intent.format]}.`;
+}
 
 /**
  * Arma un resumen del negocio (ventas, pedidos, productos top) para dar

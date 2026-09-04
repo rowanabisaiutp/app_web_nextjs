@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
 import { AdminSidebar } from "./AdminSidebar";
 import { AuthHydrate } from "./AuthHydrate";
+import FloatingAssistant from "@/components/admin/dashboard/FloatingAssistant";
 
 export default async function PanelLayout({
   children,
@@ -28,6 +29,7 @@ export default async function PanelLayout({
       <main className="flex-1 min-h-0 overflow-auto">
         {children}
       </main>
+      <FloatingAssistant />
     </div>
   );
 }
