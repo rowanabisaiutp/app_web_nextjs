@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Store, Plus, Trash2, Loader2, MapPin } from "lucide-react";
 import type { Coords } from "@/components/admin/settings/LocationPicker";
 import type { BusinessPin } from "@/components/admin/dashboard/BusinessesMap";
+import AddressSearch, { type AddressResult } from "@/components/admin/settings/AddressSearch";
 
 const LocationPicker = dynamic(
   () => import("@/components/admin/settings/LocationPicker"),
@@ -163,8 +164,20 @@ export default function MyBusinessesPanel() {
                 Ubicación
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
-                Haz clic en el mapa para marcar el punto del negocio.
+                Busca un país, ciudad o dirección para ubicar el negocio automáticamente, o haz
+                clic en el mapa para ajustar el punto a mano.
               </p>
+              <div className="mb-3">
+                <AddressSearch
+                  onSelect={(result: AddressResult) =>
+                    setForm((f) => ({
+                      ...f,
+                      address: result.displayName,
+                      coords: { lat: result.lat, lng: result.lng },
+                    }))
+                  }
+                />
+              </div>
               <LocationPicker
                 value={form.coords}
                 onChange={(coords) => setForm((f) => ({ ...f, coords }))}

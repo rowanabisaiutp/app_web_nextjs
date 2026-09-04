@@ -1,6 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -28,6 +29,20 @@ function ClickHandler({ onPick }: { onPick: (c: Coords) => void }) {
   return null;
 }
 
+function RecenterOnChange({ coords }: { coords: Coords | null }) {
+  const map = useMap();
+  const hadCoords = useRef(false);
+
+  useEffect(() => {
+    if (!coords) return;
+    const zoom = hadCoords.current ? map.getZoom() : 16;
+    hadCoords.current = true;
+    map.setView([coords.lat, coords.lng], zoom, { animate: true });
+  }, [coords, map]);
+
+  return null;
+}
+
 export default function LocationPicker({ value, onChange }: Props) {
   const center: [number, number] = value ? [value.lat, value.lng] : DEFAULT_CENTER;
 
@@ -45,6 +60,7 @@ export default function LocationPicker({ value, onChange }: Props) {
         />
         {value && <Marker position={[value.lat, value.lng]} />}
         <ClickHandler onPick={onChange} />
+        <RecenterOnChange coords={value} />
       </MapContainer>
     </div>
   );
