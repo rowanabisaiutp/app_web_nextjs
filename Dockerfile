@@ -29,11 +29,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma .
 RUN pnpm install --frozen-lockfile --prod=false
 
+# Copy application code (needed before `prisma generate`: prisma.config.ts at
+# the repo root points to `prisma/schema.prisma`, which isn't at that nested
+# path yet after the flattening `COPY prisma .` above)
+COPY . .
+
 # Generate Prisma Client
 RUN npx prisma generate
-
-# Copy application code
-COPY . .
 
 # Build application
 RUN npx next build --experimental-build-mode compile
