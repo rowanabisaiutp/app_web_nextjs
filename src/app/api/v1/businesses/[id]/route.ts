@@ -1,21 +1,6 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken, getCookieName } from "@/lib/auth";
-import { findUserById } from "@/lib/services/auth.service";
+import { requireAdmin } from "@/lib/api/requireAdmin";
 import { deleteBusiness } from "@/lib/services/business.service";
-
-async function requireAdmin() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(getCookieName())?.value;
-  if (!token) return { error: NextResponse.json({ error: "No autorizado" }, { status: 401 }), user: null };
-  const payload = await verifyToken(token);
-  if (!payload) return { error: NextResponse.json({ error: "Sesión inválida" }, { status: 401 }), user: null };
-  const user = await findUserById(payload.userId);
-  if (!user || user.role !== "ADMIN") {
-    return { error: NextResponse.json({ error: "Sin permiso" }, { status: 403 }), user: null };
-  }
-  return { error: null, user };
-}
 
 /**
  * DELETE /api/v1/businesses/[id] — Elimina un negocio del admin logueado.

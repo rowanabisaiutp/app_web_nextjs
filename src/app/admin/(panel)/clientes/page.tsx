@@ -84,12 +84,22 @@ export default function ClientesPage() {
       setClientOrders([]);
       return;
     }
+    let cancelled = false;
     setLoadingOrders(true);
     fetch(`/api/v1/orders?clientId=${selectedClient.id}`)
       .then((res) => res.json())
-      .then((data) => setClientOrders(data.orders ?? []))
-      .catch(() => setClientOrders([]))
-      .finally(() => setLoadingOrders(false));
+      .then((data) => {
+        if (!cancelled) setClientOrders(data.orders ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setClientOrders([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingOrders(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [selectedClient]);
 
   useEffect(() => {

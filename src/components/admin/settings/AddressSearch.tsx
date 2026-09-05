@@ -21,7 +21,7 @@ export default function AddressSearch({ onSelect, placeholder }: Props) {
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const search = useCallback(async (q: string) => {
+  const search = useCallback(async (q: string, cancelledRef: { current: boolean }) => {
     if (q.trim().length < 3) {
       setResults([]);
       setLoading(false);
@@ -35,6 +35,7 @@ export default function AddressSearch({ onSelect, placeholder }: Props) {
       const data: { display_name: string; lat: string; lon: string }[] = res.ok
         ? await res.json()
         : [];
+      if (cancelledRef.current) return;
       setResults(
         data.map((d) => ({
           displayName: d.display_name,
@@ -43,15 +44,19 @@ export default function AddressSearch({ onSelect, placeholder }: Props) {
         }))
       );
     } catch {
-      setResults([]);
+      if (!cancelledRef.current) setResults([]);
     } finally {
-      setLoading(false);
+      if (!cancelledRef.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => search(query), 400);
-    return () => clearTimeout(t);
+    const cancelledRef = { current: false };
+    const t = setTimeout(() => search(query, cancelledRef), 400);
+    return () => {
+      cancelledRef.current = true;
+      clearTimeout(t);
+    };
   }, [query, search]);
 
   useEffect(() => {

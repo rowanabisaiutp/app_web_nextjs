@@ -1,9 +1,13 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const COOKIE_NAME = "admin_session";
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "cambiar-en-produccion-secret-min-32-chars"
-);
+
+if (!process.env.AUTH_SECRET) {
+  throw new Error(
+    "AUTH_SECRET no está definido. Configura la variable de entorno AUTH_SECRET (mínimo 32 caracteres) antes de arrancar la app."
+  );
+}
+const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 export type SessionPayload = {
   userId: number;

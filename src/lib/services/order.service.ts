@@ -37,6 +37,52 @@ const VALID_STATUSES: OrderStatus[] = [
   "CANCELADO",
 ];
 
+function toOrderItemDto(item: {
+  id: number;
+  productName: string;
+  quantity: number;
+  unitPrice: unknown;
+}): OrderItemDto {
+  const unitPrice = Number(item.unitPrice);
+  const subtotal = unitPrice * item.quantity;
+  return {
+    id: item.id,
+    productName: item.productName,
+    quantity: item.quantity,
+    unitPrice: String(item.unitPrice),
+    subtotal: subtotal.toFixed(2),
+  };
+}
+
+function toOrderDetailDto(order: {
+  id: number;
+  clientId: number;
+  client: { name: string | null; email: string };
+  status: string;
+  total: unknown;
+  deliveryType: string;
+  deliveryAddress: string | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  items: Array<{ id: number; productName: string; quantity: number; unitPrice: unknown }>;
+}): OrderDetail {
+  return {
+    id: order.id,
+    clientId: order.clientId,
+    clientName: order.client.name ?? null,
+    clientEmail: order.client.email,
+    status: order.status,
+    total: String(order.total),
+    deliveryType: order.deliveryType,
+    deliveryAddress: order.deliveryAddress ?? null,
+    notes: order.notes ?? null,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    items: order.items.map(toOrderItemDto),
+  };
+}
+
 /**
  * Lista pedidos con filtros opcionales (estado, tipo de entrega, búsqueda, clientId).
  */
@@ -104,32 +150,7 @@ export async function getOrderById(id: number): Promise<OrderDetail | null> {
 
   if (!order) return null;
 
-  const items: OrderItemDto[] = order.items.map((item) => {
-    const unitPrice = Number(item.unitPrice);
-    const subtotal = unitPrice * item.quantity;
-    return {
-      id: item.id,
-      productName: item.productName,
-      quantity: item.quantity,
-      unitPrice: String(item.unitPrice),
-      subtotal: subtotal.toFixed(2),
-    };
-  });
-
-  return {
-    id: order.id,
-    clientId: order.clientId,
-    clientName: order.client.name ?? null,
-    clientEmail: order.client.email,
-    status: order.status,
-    total: String(order.total),
-    deliveryType: order.deliveryType,
-    deliveryAddress: order.deliveryAddress ?? null,
-    notes: order.notes ?? null,
-    createdAt: order.createdAt,
-    updatedAt: order.updatedAt,
-    items,
-  };
+  return toOrderDetailDto(order);
 }
 
 /**
@@ -152,30 +173,5 @@ export async function updateOrderStatus(
     },
   });
 
-  const items: OrderItemDto[] = order.items.map((item) => {
-    const unitPrice = Number(item.unitPrice);
-    const subtotal = unitPrice * item.quantity;
-    return {
-      id: item.id,
-      productName: item.productName,
-      quantity: item.quantity,
-      unitPrice: String(item.unitPrice),
-      subtotal: subtotal.toFixed(2),
-    };
-  });
-
-  return {
-    id: order.id,
-    clientId: order.clientId,
-    clientName: order.client.name ?? null,
-    clientEmail: order.client.email,
-    status: order.status,
-    total: String(order.total),
-    deliveryType: order.deliveryType,
-    deliveryAddress: order.deliveryAddress ?? null,
-    notes: order.notes ?? null,
-    createdAt: order.createdAt,
-    updatedAt: order.updatedAt,
-    items,
-  };
+  return toOrderDetailDto(order);
 }

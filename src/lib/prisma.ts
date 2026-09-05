@@ -26,6 +26,9 @@ function getPrismaClient(): PrismaClient {
   const adapter = new PrismaPg({
     connectionString: getConnectionString(),
     max: 10,
+    // rejectUnauthorized: true fue probado y falla contra el pooler de Supabase
+    // (Supavisor/pgbouncer) con "self-signed certificate in certificate chain" (Prisma P1011).
+    // Se mantiene en false para no romper la conexión a la base de datos real.
     ssl: { rejectUnauthorized: false },
   });
   const client = new PrismaClient({ adapter });

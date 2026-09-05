@@ -16,6 +16,28 @@ export type ProductDto = {
   createdAt: Date;
 };
 
+function toProductDto(row: {
+  id: number;
+  name: string;
+  categoryId: number;
+  category: { name: string };
+  price: unknown;
+  available: boolean;
+  imageUrl: string | null;
+  createdAt: Date;
+}): ProductDto {
+  return {
+    id: row.id,
+    name: row.name,
+    categoryId: row.categoryId,
+    categoryName: row.category.name,
+    price: String(row.price),
+    available: row.available,
+    imageUrl: row.imageUrl,
+    createdAt: row.createdAt,
+  };
+}
+
 /**
  * Lista todas las categorías.
  */
@@ -67,16 +89,7 @@ export async function listProducts(categoryId?: number): Promise<ProductDto[]> {
     orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
     include: { category: { select: { name: true } } },
   });
-  return products.map((p) => ({
-    id: p.id,
-    name: p.name,
-    categoryId: p.categoryId,
-    categoryName: p.category.name,
-    price: String(p.price),
-    available: p.available,
-    imageUrl: p.imageUrl,
-    createdAt: p.createdAt,
-  }));
+  return products.map(toProductDto);
 }
 
 /**
@@ -88,16 +101,7 @@ export async function getProductById(id: number): Promise<ProductDto | null> {
     include: { category: { select: { name: true } } },
   });
   if (!product) return null;
-  return {
-    id: product.id,
-    name: product.name,
-    categoryId: product.categoryId,
-    categoryName: product.category.name,
-    price: String(product.price),
-    available: product.available,
-    imageUrl: product.imageUrl,
-    createdAt: product.createdAt,
-  };
+  return toProductDto(product);
 }
 
 /**
@@ -120,16 +124,7 @@ export async function createProduct(data: {
     },
     include: { category: { select: { name: true } } },
   });
-  return {
-    id: product.id,
-    name: product.name,
-    categoryId: product.categoryId,
-    categoryName: product.category.name,
-    price: String(product.price),
-    available: product.available,
-    imageUrl: product.imageUrl,
-    createdAt: product.createdAt,
-  };
+  return toProductDto(product);
 }
 
 /**
@@ -156,16 +151,7 @@ export async function updateProduct(
     },
     include: { category: { select: { name: true } } },
   });
-  return {
-    id: product.id,
-    name: product.name,
-    categoryId: product.categoryId,
-    categoryName: product.category.name,
-    price: String(product.price),
-    available: product.available,
-    imageUrl: product.imageUrl,
-    createdAt: product.createdAt,
-  };
+  return toProductDto(product);
 }
 
 /**

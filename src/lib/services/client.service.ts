@@ -17,6 +17,30 @@ export type ClientDto = {
 
 export type ClientDetailDto = ClientDto & {};
 
+function toClientDto(
+  row: {
+    id: number;
+    email: string;
+    name: string | null;
+    phone: string | null;
+    address: string | null;
+    blocked: boolean;
+    createdAt: Date;
+  },
+  ordersCount: number
+): ClientDto {
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name ?? null,
+    phone: row.phone ?? null,
+    address: row.address ?? null,
+    blocked: row.blocked,
+    createdAt: row.createdAt,
+    ordersCount,
+  };
+}
+
 /**
  * Lista clientes con búsqueda opcional por nombre o email.
  */
@@ -38,16 +62,7 @@ export async function listClients(search?: string): Promise<ClientDto[]> {
     },
   });
 
-  return clients.map((c) => ({
-    id: c.id,
-    email: c.email,
-    name: c.name ?? null,
-    phone: c.phone ?? null,
-    address: c.address ?? null,
-    blocked: c.blocked,
-    createdAt: c.createdAt,
-    ordersCount: c._count.orders,
-  }));
+  return clients.map((c) => toClientDto(c, c._count.orders));
 }
 
 /**
@@ -59,16 +74,7 @@ export async function getClientById(id: number): Promise<ClientDto | null> {
     include: { _count: { select: { orders: true } } },
   });
   if (!client) return null;
-  return {
-    id: client.id,
-    email: client.email,
-    name: client.name ?? null,
-    phone: client.phone ?? null,
-    address: client.address ?? null,
-    blocked: client.blocked,
-    createdAt: client.createdAt,
-    ordersCount: client._count.orders,
-  };
+  return toClientDto(client, client._count.orders);
 }
 
 /**
@@ -96,16 +102,7 @@ export async function createClient(data: {
       address: data.address?.trim() || null,
     },
   });
-  return {
-    id: client.id,
-    email: client.email,
-    name: client.name ?? null,
-    phone: client.phone ?? null,
-    address: client.address ?? null,
-    blocked: client.blocked,
-    createdAt: client.createdAt,
-    ordersCount: 0,
-  };
+  return toClientDto(client, 0);
 }
 
 /**
@@ -130,16 +127,7 @@ export async function updateClient(
     },
     include: { _count: { select: { orders: true } } },
   });
-  return {
-    id: client.id,
-    email: client.email,
-    name: client.name ?? null,
-    phone: client.phone ?? null,
-    address: client.address ?? null,
-    blocked: client.blocked,
-    createdAt: client.createdAt,
-    ordersCount: client._count.orders,
-  };
+  return toClientDto(client, client._count.orders);
 }
 
 /**

@@ -130,6 +130,7 @@ export async function askAssistant(messages: ChatMessage[]): Promise<string> {
       temperature: 0.3,
       max_tokens: 600,
     }),
+    signal: AbortSignal.timeout(20000),
   });
 
   if (!res.ok) {
