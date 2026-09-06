@@ -13,6 +13,7 @@ const MIN_PASSWORD_LENGTH = 8;
 export async function POST(request: Request) {
   try {
     const userCount = await prisma.user.count();
+    let requesterId: number | null = null;
     if (userCount > 0) {
       const cookieStore = await cookies();
       const token = cookieStore.get(getCookieName())?.value;
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
           { status: 403 }
         );
       }
+      requesterId = requester.id;
     }
 
     const body = await request.json();
@@ -59,11 +61,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await createAdminUser({
-      email: trimmedEmail,
-      password,
-      name: typeof name === "string" ? name : undefined,
-    });
+    const user = await createAdminUser(
+      {
+        email: trimmedEmail,
+        password,
+        name: typeof name === "string" ? name : undefined,
+      },
+      requesterId
+    );
 
     return NextResponse.json({
       ok: true,

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { PaymentMethod, PaymentStatus } from "@/generated/prisma/enums";
 import type { PaymentWhereInput } from "@/generated/prisma/models/Payment";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 export type PaymentDto = {
   id: number;
@@ -66,12 +67,15 @@ export async function getPaymentById(id: number): Promise<PaymentDto | null> {
 /**
  * Registra un pago para un pedido.
  */
-export async function createPayment(data: {
-  orderId: number;
-  amount: number;
-  method: PaymentMethod;
-  status?: PaymentStatus;
-}): Promise<PaymentDto> {
+export async function createPayment(
+  data: {
+    orderId: number;
+    amount: number;
+    method: PaymentMethod;
+    status?: PaymentStatus;
+  },
+  actingUserId?: number | null
+): Promise<PaymentDto> {
   const order = await prisma.order.findUnique({
     where: { id: data.orderId },
     select: { id: true, total: true, client: { select: { email: true } } },
@@ -88,6 +92,16 @@ export async function createPayment(data: {
     },
     include: { order: { select: { total: true, client: { select: { email: true } } } } },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Registrar pago",
+    resourceType: "Payment",
+    resourceId: payment.id,
+    detail: `Pedido #${payment.orderId} — ${payment.method}`,
+    logType: "ACTION",
+  });
+
   return {
     id: payment.id,
     orderId: payment.orderId,

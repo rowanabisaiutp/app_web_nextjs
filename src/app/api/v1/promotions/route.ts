@@ -21,7 +21,7 @@ export async function GET(req: Request) {
  * POST /api/v1/promotions — Crea promoción. Body: type (COUPON|TIME), code?, discountType?, value?, validUntil?, maxUses?, name?, description?, timeStart?, timeEnd?, active?
  */
 export async function POST(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: {
     type?: string;
@@ -53,19 +53,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "discountType debe ser PERCENT o AMOUNT" }, { status: 400 });
   }
   try {
-    const promotion = await createPromotion({
-      type,
-      code: body.code ?? null,
-      discountType: discountType ?? null,
-      value: body.value ?? null,
-      validUntil: body.validUntil ?? null,
-      maxUses: body.maxUses ?? null,
-      name: body.name ?? null,
-      description: body.description ?? null,
-      timeStart: body.timeStart ?? null,
-      timeEnd: body.timeEnd ?? null,
-      active: body.active ?? true,
-    });
+    const promotion = await createPromotion(
+      {
+        type,
+        code: body.code ?? null,
+        discountType: discountType ?? null,
+        value: body.value ?? null,
+        validUntil: body.validUntil ?? null,
+        maxUses: body.maxUses ?? null,
+        name: body.name ?? null,
+        description: body.description ?? null,
+        timeStart: body.timeStart ?? null,
+        timeEnd: body.timeEnd ?? null,
+        active: body.active ?? true,
+      },
+      user.id
+    );
     return NextResponse.json({ promotion });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error al crear promoción";

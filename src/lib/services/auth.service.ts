@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/services/auditLog.service";
+import { createNotification } from "@/lib/services/notification.service";
 
 const SALT_ROUNDS = 12;
 
@@ -41,11 +43,14 @@ export async function validatePassword(plainPassword: string, hash: string): Pro
 /**
  * Crea un usuario admin (registro). Hashea la contraseña y guarda en DB.
  */
-export async function createAdminUser(data: {
-  email: string;
-  password: string;
-  name?: string | null;
-}): Promise<UserSafe> {
+export async function createAdminUser(
+  data: {
+    email: string;
+    password: string;
+    name?: string | null;
+  },
+  actingUserId?: number | null
+): Promise<UserSafe> {
   const normalizedEmail = data.email.trim().toLowerCase();
   const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
 
@@ -57,6 +62,23 @@ export async function createAdminUser(data: {
       role: "ADMIN",
     },
     select: { id: true, email: true, name: true, role: true },
+  });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear usuario admin",
+    resourceType: "User",
+    resourceId: user.id,
+    detail: `Nuevo usuario admin: ${user.email}`,
+    logType: "ACTION",
+  });
+
+  await createNotification({
+    title: "Nuevo usuario admin",
+    message: `Nuevo usuario admin: ${user.email}`,
+    type: "ADMIN_USER_CREATED",
+    resourceType: "User",
+    resourceId: user.id,
   });
 
   return user;
@@ -80,7 +102,8 @@ export async function listUsers(): Promise<UserWithCreatedAt[]> {
  */
 export async function updateUser(
   id: number,
-  data: { name?: string | null; role?: "ADMIN" }
+  data: { name?: string | null; role?: "ADMIN" },
+  actingUserId?: number | null
 ): Promise<UserSafe | null> {
   const user = await prisma.user.update({
     where: { id },
@@ -90,12 +113,29 @@ export async function updateUser(
     },
     select: { id: true, email: true, name: true, role: true },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar usuario",
+    resourceType: "User",
+    resourceId: user.id,
+    logType: "ACTION",
+  });
+
   return user;
 }
 
 /**
  * Elimina un usuario del panel.
  */
-export async function deleteUser(id: number): Promise<void> {
+export async function deleteUser(id: number, actingUserId?: number | null): Promise<void> {
   await prisma.user.delete({ where: { id } });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Eliminar usuario",
+    resourceType: "User",
+    resourceId: id,
+    logType: "ACTION",
+  });
 }

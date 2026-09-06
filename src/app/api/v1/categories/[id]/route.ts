@@ -6,7 +6,7 @@ import { updateCategory, deleteCategory } from "@/lib/services/menu.service";
  * PATCH /api/v1/categories/[id] — Actualiza categoría. Body: { name }
  */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const categoryId = parseInt(id, 10);
@@ -19,7 +19,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
   const name = body.name?.trim();
   if (!name) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
-  const category = await updateCategory(categoryId, name);
+  const category = await updateCategory(categoryId, name, user.id);
   return NextResponse.json({ category });
 }
 
@@ -27,13 +27,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
  * DELETE /api/v1/categories/[id] — Elimina categoría. Falla si tiene productos.
  */
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const categoryId = parseInt(id, 10);
   if (Number.isNaN(categoryId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   try {
-    await deleteCategory(categoryId);
+    await deleteCategory(categoryId, user.id);
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json(

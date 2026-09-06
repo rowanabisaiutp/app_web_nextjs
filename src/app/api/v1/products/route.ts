@@ -19,7 +19,7 @@ export async function GET(req: Request) {
  * POST /api/v1/products — Crea producto. Body: { name, categoryId, price, available?, imageUrl? }
  */
 export async function POST(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: { name?: string; categoryId?: number; price?: number; available?: boolean; imageUrl?: string | null };
   try {
@@ -33,12 +33,15 @@ export async function POST(req: Request) {
   if (!name) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
   if (categoryId == null || typeof categoryId !== "number") return NextResponse.json({ error: "Categoría requerida" }, { status: 400 });
   if (price == null || typeof price !== "number" || price < 0) return NextResponse.json({ error: "Precio inválido" }, { status: 400 });
-  const product = await createProduct({
-    name,
-    categoryId,
-    price,
-    available: body.available ?? true,
-    imageUrl: body.imageUrl ?? null,
-  });
+  const product = await createProduct(
+    {
+      name,
+      categoryId,
+      price,
+      available: body.available ?? true,
+      imageUrl: body.imageUrl ?? null,
+    },
+    user.id
+  );
   return NextResponse.json({ product });
 }

@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
  * PATCH /api/v1/promotions/[id] — Actualiza promoción (campos opcionales).
  */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const promotionId = parseInt(id, 10);
@@ -48,18 +48,22 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "discountType debe ser PERCENT o AMOUNT" }, { status: 400 });
   }
   try {
-    const promotion = await updatePromotion(promotionId, {
-      ...(body.code !== undefined && { code: body.code }),
-      ...(body.discountType !== undefined && { discountType: discountType ?? null }),
-      ...(body.value !== undefined && { value: body.value }),
-      ...(body.validUntil !== undefined && { validUntil: body.validUntil }),
-      ...(body.maxUses !== undefined && { maxUses: body.maxUses }),
-      ...(body.name !== undefined && { name: body.name }),
-      ...(body.description !== undefined && { description: body.description }),
-      ...(body.timeStart !== undefined && { timeStart: body.timeStart }),
-      ...(body.timeEnd !== undefined && { timeEnd: body.timeEnd }),
-      ...(body.active !== undefined && { active: body.active }),
-    });
+    const promotion = await updatePromotion(
+      promotionId,
+      {
+        ...(body.code !== undefined && { code: body.code }),
+        ...(body.discountType !== undefined && { discountType: discountType ?? null }),
+        ...(body.value !== undefined && { value: body.value }),
+        ...(body.validUntil !== undefined && { validUntil: body.validUntil }),
+        ...(body.maxUses !== undefined && { maxUses: body.maxUses }),
+        ...(body.name !== undefined && { name: body.name }),
+        ...(body.description !== undefined && { description: body.description }),
+        ...(body.timeStart !== undefined && { timeStart: body.timeStart }),
+        ...(body.timeEnd !== undefined && { timeEnd: body.timeEnd }),
+        ...(body.active !== undefined && { active: body.active }),
+      },
+      user.id
+    );
     if (!promotion) return NextResponse.json({ error: "Promoción no encontrada" }, { status: 404 });
     return NextResponse.json({ promotion });
   } catch (e) {
@@ -72,13 +76,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
  * DELETE /api/v1/promotions/[id]
  */
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const promotionId = parseInt(id, 10);
   if (Number.isNaN(promotionId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   try {
-    await deletePromotion(promotionId);
+    await deletePromotion(promotionId, user.id);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "No se pudo eliminar" }, { status: 400 });

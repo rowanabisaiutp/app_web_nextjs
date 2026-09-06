@@ -18,7 +18,7 @@ export async function GET() {
  * hoursJson, shippingCost, freeShippingFrom, igvPercent, pricesIncludeIgv).
  */
 export async function PATCH(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: Record<string, unknown>;
   try {
@@ -41,7 +41,7 @@ export async function PATCH(req: Request) {
   if (typeof body.pricesIncludeIgv === "boolean") input.pricesIncludeIgv = body.pricesIncludeIgv;
 
   try {
-    const settings = await upsertSettings(input);
+    const settings = await upsertSettings(input, user.id);
     return NextResponse.json({ settings });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error al guardar configuración";

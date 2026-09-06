@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 export type BusinessDto = {
   id: number;
@@ -56,10 +57,32 @@ export async function createBusiness(input: CreateBusinessInput): Promise<Busine
       longitude: input.longitude ?? null,
     },
   });
+
+  await createAuditLog({
+    userId: input.userId,
+    action: "Crear negocio",
+    resourceType: "Business",
+    resourceId: row.id,
+    detail: row.name,
+    logType: "ACTION",
+  });
+
   return toDto(row);
 }
 
 export async function deleteBusiness(id: number, userId: number): Promise<boolean> {
   const result = await prisma.business.deleteMany({ where: { id, userId } });
-  return result.count > 0;
+  const deleted = result.count > 0;
+
+  if (deleted) {
+    await createAuditLog({
+      userId,
+      action: "Eliminar negocio",
+      resourceType: "Business",
+      resourceId: id,
+      logType: "ACTION",
+    });
+  }
+
+  return deleted;
 }

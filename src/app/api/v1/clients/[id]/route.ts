@@ -20,7 +20,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
  * PATCH /api/v1/clients/[id] — Actualiza cliente. Body: { name?, phone?, address?, blocked? }
  */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const clientId = parseInt(id, 10);
@@ -31,12 +31,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
-  const client = await updateClient(clientId, {
-    ...(body.name !== undefined && { name: body.name }),
-    ...(body.phone !== undefined && { phone: body.phone }),
-    ...(body.address !== undefined && { address: body.address }),
-    ...(body.blocked !== undefined && { blocked: body.blocked }),
-  });
+  const client = await updateClient(
+    clientId,
+    {
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.phone !== undefined && { phone: body.phone }),
+      ...(body.address !== undefined && { address: body.address }),
+      ...(body.blocked !== undefined && { blocked: body.blocked }),
+    },
+    user.id
+  );
   return NextResponse.json({ client });
 }
 
@@ -44,13 +48,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
  * DELETE /api/v1/clients/[id] — Elimina cliente. Falla si tiene pedidos.
  */
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const clientId = parseInt(id, 10);
   if (Number.isNaN(clientId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
   try {
-    await deleteClient(clientId);
+    await deleteClient(clientId, user.id);
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json(

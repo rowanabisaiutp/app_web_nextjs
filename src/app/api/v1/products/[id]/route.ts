@@ -20,7 +20,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
  * PATCH /api/v1/products/[id] — Actualiza producto. Body: { name?, categoryId?, price?, available?, imageUrl? }
  */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const productId = parseInt(id, 10);
@@ -31,13 +31,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   } catch {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
-  const product = await updateProduct(productId, {
-    ...(body.name !== undefined && { name: body.name }),
-    ...(body.categoryId !== undefined && { categoryId: body.categoryId }),
-    ...(body.price !== undefined && { price: body.price }),
-    ...(body.available !== undefined && { available: body.available }),
-    ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl }),
-  });
+  const product = await updateProduct(
+    productId,
+    {
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.categoryId !== undefined && { categoryId: body.categoryId }),
+      ...(body.price !== undefined && { price: body.price }),
+      ...(body.available !== undefined && { available: body.available }),
+      ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl }),
+    },
+    user.id
+  );
   return NextResponse.json({ product });
 }
 
@@ -45,11 +49,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
  * DELETE /api/v1/products/[id]
  */
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   const { id } = await params;
   const productId = parseInt(id, 10);
   if (Number.isNaN(productId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
-  await deleteProduct(productId);
+  await deleteProduct(productId, user.id);
   return NextResponse.json({ ok: true });
 }

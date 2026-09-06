@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@/generated/prisma/enums";
 import type { OrderWhereInput } from "@/generated/prisma/models/Order";
+import { createAuditLog } from "@/lib/services/auditLog.service";
+import { createNotification } from "@/lib/services/notification.service";
 
 export type OrderListItem = {
   id: number;
@@ -158,11 +160,16 @@ export async function getOrderById(id: number): Promise<OrderDetail | null> {
  */
 export async function updateOrderStatus(
   id: number,
-  status: OrderStatus
+  status: OrderStatus,
+  actingUserId?: number | null
 ): Promise<OrderDetail | null> {
   if (!VALID_STATUSES.includes(status)) {
     return null;
   }
+
+  const existing = await prisma.order.findUnique({ where: { id }, select: { status: true } });
+  if (!existing) return null;
+  const oldStatus = existing.status;
 
   const order = await prisma.order.update({
     where: { id },
@@ -171,6 +178,24 @@ export async function updateOrderStatus(
       client: { select: { id: true, name: true, email: true } },
       items: true,
     },
+  });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Cambio de estado",
+    resourceType: "Order",
+    resourceId: order.id,
+    oldValue: oldStatus,
+    newValue: status,
+    logType: "STATE_CHANGE",
+  });
+
+  await createNotification({
+    title: "Pedido actualizado",
+    message: `Pedido #${order.id} cambió a ${status}`,
+    type: "ORDER_STATUS_CHANGED",
+    resourceType: "Order",
+    resourceId: order.id,
   });
 
   return toOrderDetailDto(order);

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { PromotionType, DiscountType } from "@/generated/prisma/enums";
 import type { PromotionWhereInput } from "@/generated/prisma/models/Promotion";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 export type PromotionDto = {
   id: number;
@@ -92,7 +93,10 @@ export type CreatePromotionInput = {
 /**
  * Crea una promoción (cupón o por tiempo).
  */
-export async function createPromotion(data: CreatePromotionInput): Promise<PromotionDto> {
+export async function createPromotion(
+  data: CreatePromotionInput,
+  actingUserId?: number | null
+): Promise<PromotionDto> {
   if (data.type === "COUPON" && !data.code?.trim()) {
     throw new Error("El código es obligatorio para cupones.");
   }
@@ -117,6 +121,15 @@ export async function createPromotion(data: CreatePromotionInput): Promise<Promo
       timeEnd: data.timeEnd?.trim() || null,
       active: data.active ?? true,
     },
+  });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear promoción",
+    resourceType: "Promotion",
+    resourceId: p.id,
+    detail: p.name ?? p.code ?? undefined,
+    logType: "ACTION",
   });
 
   return {
@@ -144,7 +157,8 @@ export type UpdatePromotionInput = Partial<Omit<CreatePromotionInput, "type">>;
  */
 export async function updatePromotion(
   id: number,
-  data: UpdatePromotionInput
+  data: UpdatePromotionInput,
+  actingUserId?: number | null
 ): Promise<PromotionDto | null> {
   const existing = await prisma.promotion.findUnique({ where: { id } });
   if (!existing) return null;
@@ -178,6 +192,15 @@ export async function updatePromotion(
     },
   });
 
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar promoción",
+    resourceType: "Promotion",
+    resourceId: p.id,
+    detail: p.name ?? p.code ?? undefined,
+    logType: "ACTION",
+  });
+
   return {
     id: p.id,
     type: p.type,
@@ -199,6 +222,14 @@ export async function updatePromotion(
 /**
  * Elimina una promoción.
  */
-export async function deletePromotion(id: number): Promise<void> {
+export async function deletePromotion(id: number, actingUserId?: number | null): Promise<void> {
   await prisma.promotion.delete({ where: { id } });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Eliminar promoción",
+    resourceType: "Promotion",
+    resourceId: id,
+    logType: "ACTION",
+  });
 }

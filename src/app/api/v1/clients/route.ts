@@ -18,7 +18,7 @@ export async function GET(req: Request) {
  * POST /api/v1/clients — Crea cliente. Body: { email, password, name?, phone?, address? }
  */
 export async function POST(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: {
     email?: string;
@@ -39,13 +39,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Contraseña requerida (mínimo 6 caracteres)" }, { status: 400 });
   }
   try {
-    const client = await createClient({
-      email,
-      password,
-      name: body.name ?? null,
-      phone: body.phone ?? null,
-      address: body.address ?? null,
-    });
+    const client = await createClient(
+      {
+        email,
+        password,
+        name: body.name ?? null,
+        phone: body.phone ?? null,
+        address: body.address ?? null,
+      },
+      user.id
+    );
     return NextResponse.json({ client });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error al crear cliente";

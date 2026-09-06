@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import type { ClientWhereInput } from "@/generated/prisma/models/Client";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 const SALT_ROUNDS = 12;
 
@@ -80,13 +81,16 @@ export async function getClientById(id: number): Promise<ClientDto | null> {
 /**
  * Crea un cliente. El email debe ser único.
  */
-export async function createClient(data: {
-  email: string;
-  password: string;
-  name?: string | null;
-  phone?: string | null;
-  address?: string | null;
-}): Promise<ClientDto> {
+export async function createClient(
+  data: {
+    email: string;
+    password: string;
+    name?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  },
+  actingUserId?: number | null
+): Promise<ClientDto> {
   const email = data.email.trim().toLowerCase();
   const existing = await prisma.client.findUnique({ where: { email } });
   if (existing) {
@@ -102,6 +106,16 @@ export async function createClient(data: {
       address: data.address?.trim() || null,
     },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear cliente",
+    resourceType: "Client",
+    resourceId: client.id,
+    detail: client.email,
+    logType: "ACTION",
+  });
+
   return toClientDto(client, 0);
 }
 
@@ -115,7 +129,8 @@ export async function updateClient(
     phone?: string | null;
     address?: string | null;
     blocked?: boolean;
-  }
+  },
+  actingUserId?: number | null
 ): Promise<ClientDto | null> {
   const client = await prisma.client.update({
     where: { id },
@@ -127,12 +142,29 @@ export async function updateClient(
     },
     include: { _count: { select: { orders: true } } },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar cliente",
+    resourceType: "Client",
+    resourceId: client.id,
+    logType: "ACTION",
+  });
+
   return toClientDto(client, client._count.orders);
 }
 
 /**
  * Elimina un cliente. Falla si tiene pedidos (Restrict).
  */
-export async function deleteClient(id: number): Promise<void> {
+export async function deleteClient(id: number, actingUserId?: number | null): Promise<void> {
   await prisma.client.delete({ where: { id } });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Eliminar cliente",
+    resourceType: "Client",
+    resourceId: id,
+    logType: "ACTION",
+  });
 }

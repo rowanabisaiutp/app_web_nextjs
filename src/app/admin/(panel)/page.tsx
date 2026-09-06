@@ -1,11 +1,27 @@
 import { cookies } from "next/headers";
 import { verifyToken, getCookieName } from "@/lib/auth";
 import MyBusinessesPanel from "@/components/admin/dashboard/MyBusinessesPanel";
+import { prisma } from "@/lib/prisma";
+import { getSalesByPeriod, getPeriodPreset } from "@/lib/services/report.service";
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(getCookieName())?.value;
   const payload = token ? await verifyToken(token) : null;
+
+  const today = getPeriodPreset("hoy");
+  const [salesToday, activeOrderCount, revenueAgg] = await Promise.all([
+    getSalesByPeriod(today.from, today.to),
+    prisma.order.count({
+      where: { status: { notIn: ["ENTREGADO", "CANCELADO"] } },
+    }),
+    prisma.order.aggregate({
+      where: { status: { not: "CANCELADO" } },
+      _sum: { total: true },
+    }),
+  ]);
+
+  const totalRevenue = revenueAgg._sum.total != null ? Number(revenueAgg._sum.total) : 0;
 
   return (
     <div className="p-6 lg:p-8">
@@ -20,10 +36,10 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {[
-          { title: "Ventas del día", value: "—", subtitle: "Hoy" },
-          { title: "Pedidos activos", value: "—", subtitle: "En curso" },
-          { title: "Ingresos totales", value: "—", subtitle: "Periodo" },
-          { title: "Ticket promedio", value: "—", subtitle: "Promedio" },
+          { title: "Ventas del día", value: `$${salesToday.totalSales}`, subtitle: "Hoy" },
+          { title: "Pedidos activos", value: String(activeOrderCount), subtitle: "En curso" },
+          { title: "Ingresos totales", value: `$${totalRevenue.toFixed(2)}`, subtitle: "Periodo" },
+          { title: "Ticket promedio", value: `$${salesToday.averageTicket}`, subtitle: "Promedio" },
         ].map((card) => (
           <div
             key={card.title}

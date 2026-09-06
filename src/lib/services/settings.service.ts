@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 export type SettingsDto = {
   id: number;
@@ -75,7 +76,10 @@ export type UpsertSettingsInput = {
  * Crea o actualiza la configuración del negocio.
  * Si ya existe un registro, lo actualiza; si no, crea uno con nombre por defecto.
  */
-export async function upsertSettings(input: UpsertSettingsInput): Promise<SettingsDto> {
+export async function upsertSettings(
+  input: UpsertSettingsInput,
+  actingUserId?: number | null
+): Promise<SettingsDto> {
   const existing = await prisma.settings.findFirst({ orderBy: { id: "asc" } });
 
   const data = {
@@ -92,14 +96,23 @@ export async function upsertSettings(input: UpsertSettingsInput): Promise<Settin
     pricesIncludeIgv: input.pricesIncludeIgv !== undefined ? input.pricesIncludeIgv : existing?.pricesIncludeIgv ?? true,
   };
 
+  let row;
   if (existing) {
-    const row = await prisma.settings.update({
+    row = await prisma.settings.update({
       where: { id: existing.id },
       data,
     });
-    return toDto(row);
+  } else {
+    row = await prisma.settings.create({ data });
   }
 
-  const row = await prisma.settings.create({ data });
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar configuración",
+    resourceType: "Settings",
+    resourceId: row.id,
+    logType: "ACTION",
+  });
+
   return toDto(row);
 }

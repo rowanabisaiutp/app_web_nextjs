@@ -24,7 +24,7 @@ export async function GET(req: Request) {
  * POST /api/v1/payments — Registra un pago. Body: { orderId, amount, method }
  */
 export async function POST(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: { orderId?: number; amount?: number; method?: PaymentMethod; status?: PaymentStatus };
   try {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   if (amount == null || typeof amount !== "number" || amount <= 0) return NextResponse.json({ error: "Monto inválido (debe ser > 0)" }, { status: 400 });
   if (method !== "EFECTIVO" && method !== "TARJETA") return NextResponse.json({ error: "Método debe ser EFECTIVO o TARJETA" }, { status: 400 });
   try {
-    const payment = await createPayment({ orderId, amount, method, status: body.status });
+    const payment = await createPayment({ orderId, amount, method, status: body.status }, user.id);
     return NextResponse.json({ payment });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error al registrar pago";

@@ -9,7 +9,7 @@ export async function PATCH(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error } = await requireAdmin();
+  const { error, user: currentUser } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
@@ -29,7 +29,7 @@ export async function PATCH(
   if (typeof body.name === "string") data.name = body.name;
   if (body.role === "ADMIN") data.role = "ADMIN";
 
-  const user = await updateUser(userId, data);
+  const user = await updateUser(userId, data, currentUser.id);
   return NextResponse.json({ user });
 }
 
@@ -56,6 +56,6 @@ export async function DELETE(
     );
   }
 
-  await deleteUser(userId);
+  await deleteUser(userId, currentUser?.id ?? null);
   return NextResponse.json({ ok: true });
 }

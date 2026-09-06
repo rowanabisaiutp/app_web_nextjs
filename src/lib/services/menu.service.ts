@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/services/auditLog.service";
 
 export type CategoryDto = {
   id: number;
@@ -52,31 +53,66 @@ export async function listCategories(): Promise<CategoryDto[]> {
 /**
  * Crea una categoría.
  */
-export async function createCategory(name: string): Promise<CategoryDto> {
+export async function createCategory(
+  name: string,
+  actingUserId?: number | null
+): Promise<CategoryDto> {
   const category = await prisma.category.create({
     data: { name: name.trim() },
     select: { id: true, name: true },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear categoría",
+    resourceType: "Category",
+    resourceId: category.id,
+    detail: category.name,
+    logType: "ACTION",
+  });
+
   return category;
 }
 
 /**
  * Actualiza una categoría.
  */
-export async function updateCategory(id: number, name: string): Promise<CategoryDto | null> {
+export async function updateCategory(
+  id: number,
+  name: string,
+  actingUserId?: number | null
+): Promise<CategoryDto | null> {
   const category = await prisma.category.update({
     where: { id },
     data: { name: name.trim() },
     select: { id: true, name: true },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar categoría",
+    resourceType: "Category",
+    resourceId: category.id,
+    detail: category.name,
+    logType: "ACTION",
+  });
+
   return category;
 }
 
 /**
  * Elimina una categoría. Falla si tiene productos (Restrict).
  */
-export async function deleteCategory(id: number): Promise<void> {
+export async function deleteCategory(id: number, actingUserId?: number | null): Promise<void> {
   await prisma.category.delete({ where: { id } });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Eliminar categoría",
+    resourceType: "Category",
+    resourceId: id,
+    logType: "ACTION",
+  });
 }
 
 /**
@@ -107,13 +143,16 @@ export async function getProductById(id: number): Promise<ProductDto | null> {
 /**
  * Crea un producto.
  */
-export async function createProduct(data: {
-  name: string;
-  categoryId: number;
-  price: number;
-  available?: boolean;
-  imageUrl?: string | null;
-}): Promise<ProductDto> {
+export async function createProduct(
+  data: {
+    name: string;
+    categoryId: number;
+    price: number;
+    available?: boolean;
+    imageUrl?: string | null;
+  },
+  actingUserId?: number | null
+): Promise<ProductDto> {
   const product = await prisma.product.create({
     data: {
       name: data.name.trim(),
@@ -124,6 +163,16 @@ export async function createProduct(data: {
     },
     include: { category: { select: { name: true } } },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear producto",
+    resourceType: "Product",
+    resourceId: product.id,
+    detail: product.name,
+    logType: "ACTION",
+  });
+
   return toProductDto(product);
 }
 
@@ -138,7 +187,8 @@ export async function updateProduct(
     price?: number;
     available?: boolean;
     imageUrl?: string | null;
-  }
+  },
+  actingUserId?: number | null
 ): Promise<ProductDto | null> {
   const product = await prisma.product.update({
     where: { id },
@@ -151,12 +201,30 @@ export async function updateProduct(
     },
     include: { category: { select: { name: true } } },
   });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Actualizar producto",
+    resourceType: "Product",
+    resourceId: product.id,
+    detail: product.name,
+    logType: "ACTION",
+  });
+
   return toProductDto(product);
 }
 
 /**
  * Elimina un producto.
  */
-export async function deleteProduct(id: number): Promise<void> {
+export async function deleteProduct(id: number, actingUserId?: number | null): Promise<void> {
   await prisma.product.delete({ where: { id } });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Eliminar producto",
+    resourceType: "Product",
+    resourceId: id,
+    logType: "ACTION",
+  });
 }

@@ -16,7 +16,7 @@ export async function GET() {
  * POST /api/v1/categories — Crea categoría. Solo ADMIN. Body: { name }
  */
 export async function POST(req: Request) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAdmin();
   if (error) return error;
   let body: { name?: string };
   try {
@@ -26,6 +26,6 @@ export async function POST(req: Request) {
   }
   const name = body.name?.trim();
   if (!name) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
-  const category = await createCategory(name);
+  const category = await createCategory(name, user.id);
   return NextResponse.json({ category });
 }
