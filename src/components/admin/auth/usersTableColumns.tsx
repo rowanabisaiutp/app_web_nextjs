@@ -13,6 +13,8 @@ export type UsersTableColumnsParams = {
   deletingId: number | null;
   onSave: (id: number) => void;
   onDelete: (id: number) => void;
+  /** id de negocio -> nombre, para mostrar el negocio asignado a un cajero */
+  businessNames?: Record<number, string>;
 };
 
 export function getUsersTableColumns({
@@ -24,6 +26,7 @@ export function getUsersTableColumns({
   deletingId,
   onSave,
   onDelete,
+  businessNames = {},
 }: UsersTableColumnsParams): AdminTableColumn<AdminUserRow>[] {
   return [
     {
@@ -56,6 +59,17 @@ export function getUsersTableColumns({
       render: (u) => (
         <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
           {u.role}
+        </span>
+      ),
+    },
+    {
+      key: "business",
+      label: "Negocio",
+      render: (u) => (
+        <span className="text-neutral-600 dark:text-neutral-400">
+          {u.role === "CAJERO" && u.workBusinessId != null
+            ? businessNames[u.workBusinessId] ?? `#${u.workBusinessId}`
+            : "—"}
         </span>
       ),
     },

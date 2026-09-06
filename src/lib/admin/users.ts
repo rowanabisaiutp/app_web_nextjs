@@ -5,6 +5,7 @@ export type AdminUserRow = {
   email: string;
   name: string | null;
   role: string;
+  workBusinessId: number | null;
   createdAt: string;
 };
 

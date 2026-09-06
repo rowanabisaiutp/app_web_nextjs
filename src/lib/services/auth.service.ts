@@ -10,6 +10,7 @@ export type UserSafe = {
   email: string;
   name: string | null;
   role: string;
+  workBusinessId: number | null;
 };
 
 /**
@@ -28,7 +29,7 @@ export async function findUserByEmail(email: string) {
 export async function findUserById(id: number): Promise<UserSafe | null> {
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, email: true, name: true, role: true },
+    select: { id: true, email: true, name: true, role: true, workBusinessId: true },
   });
   return user;
 }
@@ -41,42 +42,49 @@ export async function validatePassword(plainPassword: string, hash: string): Pro
 }
 
 /**
- * Crea un usuario admin (registro). Hashea la contraseña y guarda en DB.
+ * Crea un usuario del panel (admin o cajero). Hashea la contraseña y guarda en DB.
+ * `role: "CAJERO"` requiere `workBusinessId` (el negocio donde trabaja).
  */
-export async function createAdminUser(
+export async function createUser(
   data: {
     email: string;
     password: string;
     name?: string | null;
+    role?: "ADMIN" | "CAJERO";
+    workBusinessId?: number | null;
   },
   actingUserId?: number | null
 ): Promise<UserSafe> {
   const normalizedEmail = data.email.trim().toLowerCase();
   const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
+  const role = data.role ?? "ADMIN";
 
   const user = await prisma.user.create({
     data: {
       email: normalizedEmail,
       passwordHash,
       name: data.name?.trim() || null,
-      role: "ADMIN",
+      role,
+      workBusinessId: role === "CAJERO" ? data.workBusinessId ?? null : null,
     },
-    select: { id: true, email: true, name: true, role: true },
+    select: { id: true, email: true, name: true, role: true, workBusinessId: true },
   });
+
+  const roleLabel = role === "CAJERO" ? "cajero" : "admin";
 
   await createAuditLog({
     userId: actingUserId ?? null,
-    action: "Crear usuario admin",
+    action: `Crear usuario ${roleLabel}`,
     resourceType: "User",
     resourceId: user.id,
-    detail: `Nuevo usuario admin: ${user.email}`,
+    detail: `Nuevo usuario ${roleLabel}: ${user.email}`,
     logType: "ACTION",
   });
 
   await createNotification({
-    title: "Nuevo usuario admin",
-    message: `Nuevo usuario admin: ${user.email}`,
-    type: "ADMIN_USER_CREATED",
+    title: `Nuevo usuario ${roleLabel}`,
+    message: `Nuevo usuario ${roleLabel}: ${user.email}`,
+    type: "USER_CREATED",
     resourceType: "User",
     resourceId: user.id,
   });
@@ -92,17 +100,17 @@ export type UserWithCreatedAt = UserSafe & { createdAt: Date };
 export async function listUsers(): Promise<UserWithCreatedAt[]> {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    select: { id: true, email: true, name: true, role: true, createdAt: true },
+    select: { id: true, email: true, name: true, role: true, workBusinessId: true, createdAt: true },
   });
   return users;
 }
 
 /**
- * Actualiza nombre y/o rol de un usuario.
+ * Actualiza nombre, rol y/o negocio asignado (para CAJERO) de un usuario.
  */
 export async function updateUser(
   id: number,
-  data: { name?: string | null; role?: "ADMIN" },
+  data: { name?: string | null; role?: "ADMIN" | "CAJERO"; workBusinessId?: number | null },
   actingUserId?: number | null
 ): Promise<UserSafe | null> {
   const user = await prisma.user.update({
@@ -110,8 +118,9 @@ export async function updateUser(
     data: {
       ...(data.name !== undefined && { name: data.name?.trim() || null }),
       ...(data.role !== undefined && { role: data.role }),
+      ...(data.workBusinessId !== undefined && { workBusinessId: data.workBusinessId }),
     },
-    select: { id: true, email: true, name: true, role: true },
+    select: { id: true, email: true, name: true, role: true, workBusinessId: true },
   });
 
   await createAuditLog({

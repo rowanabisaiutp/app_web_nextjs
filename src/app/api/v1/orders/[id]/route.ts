@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/api/requireAdmin";
+import { requireAuth } from "@/lib/api/requireAdmin";
 import { getOrderById, updateOrderStatus } from "@/lib/services/order.service";
 import type { OrderStatus } from "@/generated/prisma/enums";
 
@@ -12,13 +12,14 @@ const VALID_STATUSES: OrderStatus[] = [
 ];
 
 /**
- * GET /api/v1/orders/[id] — Detalle de un pedido. Solo ADMIN.
+ * GET /api/v1/orders/[id] — Detalle de un pedido. ADMIN o CAJERO (el cajero solo
+ * puede ver pedidos de su propio negocio).
  */
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error } = await requireAdmin();
+  const { error, user } = await requireAuth();
   if (error) return error;
 
   const { id } = await params;
@@ -32,24 +33,37 @@ export async function GET(
     return NextResponse.json({ error: "Pedido no encontrado" }, { status: 404 });
   }
 
+  if (user.role === "CAJERO" && order.businessId !== user.workBusinessId) {
+    return NextResponse.json({ error: "Sin permiso" }, { status: 403 });
+  }
+
   return NextResponse.json({ order });
 }
 
 /**
- * PATCH /api/v1/orders/[id] — Actualiza estado del pedido. Solo ADMIN.
+ * PATCH /api/v1/orders/[id] — Actualiza estado del pedido. ADMIN o CAJERO (el
+ * cajero solo puede actualizar pedidos de su propio negocio).
  * Body: { status: OrderStatus }
  */
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error, user } = await requireAdmin();
+  const { error, user } = await requireAuth();
   if (error) return error;
 
   const { id } = await params;
   const orderId = parseInt(id, 10);
   if (Number.isNaN(orderId)) {
     return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+  }
+
+  const existing = await getOrderById(orderId);
+  if (!existing) {
+    return NextResponse.json({ error: "Pedido no encontrado" }, { status: 404 });
+  }
+  if (user.role === "CAJERO" && existing.businessId !== user.workBusinessId) {
+    return NextResponse.json({ error: "Sin permiso" }, { status: 403 });
   }
 
   let body: { status?: string };

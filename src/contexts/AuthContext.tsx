@@ -52,10 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }));
           return { ok: false as const };
         }
-        const user =
-          "user" in data && data.user
-            ? { ...data.user, role: "ADMIN" as const }
-            : null;
+        const user = "user" in data && data.user ? data.user : null;
         setState((s) => ({ ...s, loading: false, user }));
         return { ok: true as const };
       } catch {

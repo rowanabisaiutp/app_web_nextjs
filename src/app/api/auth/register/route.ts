@@ -5,7 +5,7 @@ import { verifyToken, getCookieName } from "@/lib/auth";
 import {
   findUserByEmail,
   findUserById,
-  createAdminUser,
+  createUser,
 } from "@/lib/services/auth.service";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -61,11 +61,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await createAdminUser(
+    const user = await createUser(
       {
         email: trimmedEmail,
         password,
         name: typeof name === "string" ? name : undefined,
+        role: "ADMIN",
       },
       requesterId
     );

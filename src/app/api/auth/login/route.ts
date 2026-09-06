@@ -51,7 +51,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      user: { id: user.id, email: user.email, name: user.name },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        workBusinessId: user.workBusinessId,
+      },
     });
   } catch (e) {
     console.error("Login error:", e);

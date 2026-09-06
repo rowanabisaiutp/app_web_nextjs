@@ -7,6 +7,7 @@ export type PaymentDto = {
   id: number;
   orderId: number;
   orderTotal: string;
+  businessId: number | null;
   amount: string;
   method: PaymentMethod;
   status: PaymentStatus;
@@ -15,26 +16,32 @@ export type PaymentDto = {
 };
 
 /**
- * Lista pagos con filtros opcionales (orderId, method).
+ * Lista pagos con filtros opcionales (orderId, method, businessId).
+ * `businessId` filtra por el negocio del pedido asociado (para CAJERO).
  */
 export async function listPayments(filters?: {
   orderId?: number;
   method?: PaymentMethod;
+  businessId?: number;
 }): Promise<PaymentDto[]> {
   const where: PaymentWhereInput = {};
   if (filters?.orderId != null) where.orderId = filters.orderId;
   if (filters?.method != null) where.method = filters.method;
+  if (filters?.businessId != null) where.order = { businessId: filters.businessId };
 
   const payments = await prisma.payment.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    include: { order: { select: { total: true, client: { select: { email: true } } } } },
+    include: {
+      order: { select: { total: true, businessId: true, client: { select: { email: true } } } },
+    },
   });
 
   return payments.map((p) => ({
     id: p.id,
     orderId: p.orderId,
     orderTotal: String(p.order.total),
+    businessId: p.order.businessId,
     amount: String(p.amount),
     method: p.method,
     status: p.status,
@@ -49,13 +56,16 @@ export async function listPayments(filters?: {
 export async function getPaymentById(id: number): Promise<PaymentDto | null> {
   const payment = await prisma.payment.findUnique({
     where: { id },
-    include: { order: { select: { total: true, client: { select: { email: true } } } } },
+    include: {
+      order: { select: { total: true, businessId: true, client: { select: { email: true } } } },
+    },
   });
   if (!payment) return null;
   return {
     id: payment.id,
     orderId: payment.orderId,
     orderTotal: String(payment.order.total),
+    businessId: payment.order.businessId,
     amount: String(payment.amount),
     method: payment.method,
     status: payment.status,
@@ -90,7 +100,9 @@ export async function createPayment(
       method: data.method,
       status: data.status ?? "PAGADO",
     },
-    include: { order: { select: { total: true, client: { select: { email: true } } } } },
+    include: {
+      order: { select: { total: true, businessId: true, client: { select: { email: true } } } },
+    },
   });
 
   await createAuditLog({
@@ -106,6 +118,7 @@ export async function createPayment(
     id: payment.id,
     orderId: payment.orderId,
     orderTotal: String(payment.order.total),
+    businessId: payment.order.businessId,
     amount: String(payment.amount),
     method: payment.method,
     status: payment.status,

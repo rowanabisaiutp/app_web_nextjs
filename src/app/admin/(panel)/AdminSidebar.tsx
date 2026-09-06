@@ -47,6 +47,12 @@ const navItems = [
   { href: "/admin/logs", label: "Logs y auditoría", Icon: ScrollText },
 ];
 
+/** Un cajero solo gestiona pedidos (crear/ver/cambiar estado) para su propio
+ * negocio — el resto de secciones del panel no le corresponden. La restricción
+ * real vive en cada endpoint de la API; esto es solo para no mostrar enlaces
+ * a secciones a las que igualmente no tendría acceso. */
+const CAJERO_ALLOWED_HREFS = new Set(["/admin", "/admin/pedidos"]);
+
 type Props = {
   user: { email: string };
 };
@@ -191,6 +197,10 @@ export function AdminSidebar({ user: userProp }: Props) {
   const { user: userFromAuth, logout } = useAuth();
   const displayEmail = userFromAuth?.email ?? userProp.email;
   const displayName = userFromAuth?.name ?? undefined;
+  const visibleNavItems =
+    userFromAuth?.role === "CAJERO"
+      ? navItems.filter((item) => CAJERO_ALLOWED_HREFS.has(item.href))
+      : navItems;
 
   return (
     <aside className="w-64 shrink-0 flex flex-col border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
@@ -210,7 +220,7 @@ export function AdminSidebar({ user: userProp }: Props) {
 
       <nav className="flex-1 overflow-y-auto py-3 px-2">
         <ul className="space-y-0.5" role="list">
-          {navItems.map(({ href, label, Icon }) => {
+          {visibleNavItems.map(({ href, label, Icon }) => {
             const isActive =
               href === "/admin"
                 ? pathname === "/admin"

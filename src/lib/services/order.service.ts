@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { OrderStatus } from "@/generated/prisma/enums";
+import type { OrderStatus, DeliveryType } from "@/generated/prisma/enums";
 import type { OrderWhereInput } from "@/generated/prisma/models/Order";
 import { createAuditLog } from "@/lib/services/auditLog.service";
 import { createNotification } from "@/lib/services/notification.service";
@@ -9,6 +9,7 @@ export type OrderListItem = {
   clientId: number;
   clientName: string | null;
   clientEmail: string;
+  businessId: number | null;
   status: string;
   total: string;
   deliveryType: string;
@@ -60,6 +61,7 @@ function toOrderDetailDto(order: {
   id: number;
   clientId: number;
   client: { name: string | null; email: string };
+  businessId: number | null;
   status: string;
   total: unknown;
   deliveryType: string;
@@ -74,6 +76,7 @@ function toOrderDetailDto(order: {
     clientId: order.clientId,
     clientName: order.client.name ?? null,
     clientEmail: order.client.email,
+    businessId: order.businessId,
     status: order.status,
     total: String(order.total),
     deliveryType: order.deliveryType,
@@ -93,6 +96,7 @@ export async function listOrders(filters?: {
   deliveryType?: "LOCAL" | "DOMICILIO" | "todos";
   search?: string;
   clientId?: number;
+  businessId?: number;
 }): Promise<OrderListItem[]> {
   const where: OrderWhereInput = {};
 
@@ -106,6 +110,10 @@ export async function listOrders(filters?: {
 
   if (filters?.clientId != null) {
     where.clientId = filters.clientId;
+  }
+
+  if (filters?.businessId != null) {
+    where.businessId = filters.businessId;
   }
 
   if (filters?.search?.trim()) {
@@ -130,6 +138,7 @@ export async function listOrders(filters?: {
     clientId: o.clientId,
     clientName: o.client.name ?? null,
     clientEmail: o.client.email,
+    businessId: o.businessId,
     status: o.status,
     total: String(o.total),
     deliveryType: o.deliveryType,
@@ -194,6 +203,82 @@ export async function updateOrderStatus(
     title: "Pedido actualizado",
     message: `Pedido #${order.id} cambió a ${status}`,
     type: "ORDER_STATUS_CHANGED",
+    resourceType: "Order",
+    resourceId: order.id,
+  });
+
+  return toOrderDetailDto(order);
+}
+
+/**
+ * Crea un pedido con sus ítems. El precio de cada ítem se toma del producto
+ * actual en BD (nunca del cliente) y el total se calcula a partir de esos precios.
+ */
+export async function createOrder(
+  data: {
+    clientId: number;
+    items: { productId: number; quantity: number }[];
+    deliveryType: DeliveryType;
+    deliveryAddress?: string | null;
+    notes?: string | null;
+    businessId?: number | null;
+  },
+  actingUserId?: number | null
+): Promise<OrderDetail> {
+  if (!data.items || data.items.length === 0) {
+    throw new Error("El pedido debe tener al menos un ítem");
+  }
+
+  const productIds = [...new Set(data.items.map((i) => i.productId))];
+  const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
+  const orderItemsData = data.items.map((item) => {
+    if (item.quantity <= 0) throw new Error("La cantidad debe ser mayor a 0");
+    const product = productMap.get(item.productId);
+    if (!product) throw new Error(`Producto ${item.productId} no encontrado`);
+    return {
+      productId: product.id,
+      productName: product.name,
+      quantity: item.quantity,
+      unitPrice: product.price,
+    };
+  });
+
+  const total = orderItemsData.reduce(
+    (sum, item) => sum + Number(item.unitPrice) * item.quantity,
+    0
+  );
+
+  const order = await prisma.order.create({
+    data: {
+      clientId: data.clientId,
+      businessId: data.businessId ?? null,
+      deliveryType: data.deliveryType,
+      deliveryAddress: data.deliveryAddress ?? null,
+      notes: data.notes ?? null,
+      total,
+      items: { create: orderItemsData },
+    },
+    include: {
+      client: { select: { id: true, name: true, email: true } },
+      items: true,
+    },
+  });
+
+  await createAuditLog({
+    userId: actingUserId ?? null,
+    action: "Crear pedido",
+    resourceType: "Order",
+    resourceId: order.id,
+    detail: `Pedido #${order.id} — S/ ${total.toFixed(2)}`,
+    logType: "ACTION",
+  });
+
+  await createNotification({
+    title: "Nuevo pedido",
+    message: `Pedido #${order.id} creado — S/ ${total.toFixed(2)}`,
+    type: "ORDER_CREATED",
     resourceType: "Order",
     resourceId: order.id,
   });

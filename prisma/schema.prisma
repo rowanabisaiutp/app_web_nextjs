@@ -9,6 +9,7 @@ datasource db {
 
 enum Role {
   ADMIN
+  CAJERO
 }
 
 enum OrderStatus {
@@ -51,25 +52,30 @@ enum AuditLogType {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         Role     @default(ADMIN)
-  createdAt    DateTime @default(now())
-  auditLogs    AuditLog[]
-  businesses   Business[]
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  passwordHash   String
+  name           String?
+  role           Role      @default(ADMIN)
+  // Solo aplica a CAJERO: el negocio/sucursal donde trabaja. ADMIN no usa este campo.
+  workBusinessId Int?
+  workBusiness   Business? @relation("BusinessCashiers", fields: [workBusinessId], references: [id], onDelete: SetNull)
+  createdAt      DateTime  @default(now())
+  auditLogs      AuditLog[]
+  businesses     Business[] @relation("BusinessOwner")
 }
 
 model Business {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("BusinessOwner", fields: [userId], references: [id], onDelete: Cascade)
   name      String
   address   String?  @db.Text
   latitude  Decimal? @db.Decimal(10, 7)
   longitude Decimal? @db.Decimal(10, 7)
   createdAt DateTime @default(now())
+  cashiers  User[]   @relation("BusinessCashiers")
+  orders    Order[]
 }
 
 model Client {
@@ -106,6 +112,10 @@ model Order {
   id               Int          @id @default(autoincrement())
   clientId         Int
   client           Client       @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  // Negocio/sucursal donde se registró la venta. Nulo para pedidos históricos
+  // previos a esta relación, o si el pedido no vino de un cajero.
+  businessId       Int?
+  business         Business?    @relation(fields: [businessId], references: [id], onDelete: SetNull)
   status           OrderStatus  @default(CONFIRMADO)
   total            Decimal      @db.Decimal(10, 2)
   deliveryType     DeliveryType @default(LOCAL)
